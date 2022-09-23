@@ -55,30 +55,32 @@ app.get('/', (req, res) => {
 
 app.post('/login', urlencodedParser, (req, res) => {
     let sql = "SELECT * FROM user WHERE email = ?";
+    console.log("attempt");
     (async() => {
         try{
             const response = await query(sql, [req.body.email]);
             if(response.length < 1){
-                response.status(401).json({
-                    message: 'Incorrect email'
+                res.status(401).json({
+                    message: 'Incorrect Login credentials'
                 })
                 return;
             }else{
-                bcrypt.compare(req.body.password, res[0].password, function (err, resp) {
+                bcrypt.compare(req.body.password, response[0].password, function (err, resp) {
                     if(err){
                         return;
                     }
                     if(resp){
                         let user ={
-                            user_id: res[0].user_id,
-                            username: res[0].username,
-                            email: res[0].email,
+                            user_id: response[0].user_id,
+                            username: response[0].username,
+                            email: response[0].email,
+                            password: response[0].password
                         }
                         const accessToken = jwt.sign({user:user}, process.env.TOKEN_KEY, {expiresIn: "1h"});
-                        response.status(202).json({accessToken: accessToken, username: req.body.username, email: req.body.email});
+                        res.status(202).json({accessToken: accessToken, username: response[0].username, email: response[0].email});
                     }else{
-                        response.status(401).json({
-                            message: 'Incorrect login details'
+                        res.status(401).json({
+                            message: 'Incorrect login credentials'
                         });
                     }
                 })
@@ -114,6 +116,7 @@ app.post("/signup", urlencodedParser, (req, res) => {
                         user_id: response.insertId,
                         username: req.body.username,
                         email: req.body.email,
+                        password: hashedPass
                     }
                     const accessToken = jwt.sign({user: user}, process.env.TOKEN_KEY, {expiresIn: '1h'});
                     res.status(202).json({accessToken: accessToken, username: req.body.username});
