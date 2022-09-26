@@ -3,8 +3,11 @@ import {useState} from 'react';
 import Col from 'react-bootstrap/Col'
 import Button from "react-bootstrap/Button";
 import React from 'react';
+import {useNavigate} from "react-router-dom";
 
 function LogInForm() {
+
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -44,8 +47,9 @@ function LogInForm() {
                     console.log(data);
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("username", data.username);
+                    navigate('/HomePage');
+                    event.target.submit();
                 })
-                event.target.submit();
             }
             if(response.status === 401){
                 setErrors({

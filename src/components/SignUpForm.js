@@ -3,8 +3,11 @@ import {useState} from 'react';
 import Col from 'react-bootstrap/Col'
 import Button from "react-bootstrap/Button";
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function SignUpForm() {
+
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -43,9 +46,13 @@ function SignUpForm() {
                 })
             })
             if(response.status === 202){
-                localStorage.setItem("accessToken", response.body.accessToken);
-                localStorage.setItem("username", response.body.username);
-                event.target.submit();
+                response.json().then((data) =>{
+                    console.log(data);
+                    localStorage.setItem("accessToken", data.accessToken);
+                    localStorage.setItem("username", data.username);
+                    navigate('/HomePage');
+                    event.target.submit();
+                })
             }
             if(response.status === 409){
                 console.log("username or email taken");

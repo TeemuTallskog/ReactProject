@@ -2,6 +2,8 @@ import {Nav, Navbar, NavLink, Row} from "react-bootstrap";
 import {Outlet, Link} from "react-router-dom";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import {useCallback, useEffect} from "react";
+import AutocompleteUserSearch from "./AutocompleteUserSearch";
 
 
 function NavigationBar(){
@@ -14,16 +16,15 @@ function NavigationBar(){
         window.location.reload(false);
     }
 
-    let loggedInText = <><NavLink as={Link} to="/LogInForm">LogIn</NavLink>
-    <NavLink as={Link} to="/SignUpForm">SignUp</NavLink></>;
+    let displayLogin= <><NavLink as={Link} to="/LogInForm">LogIn</NavLink>
+        <NavLink as={Link} to="/SignUpForm">SignUp</NavLink></>;
 
     if(localStorage.getItem("username")){
-        loggedInText = <>
+        displayLogin = <>
             <Navbar.Text>Logged in as: {localStorage.getItem("username")}</Navbar.Text>
             <Button variant="link" onClick={logout}>Logout</Button>
         </>
     }
-
 
     return(
         <>
@@ -35,8 +36,11 @@ function NavigationBar(){
                     <Col style={{display: 'flex'}}>
                 <NavLink as={Link} to="/HomePage">Home</NavLink>
                     </Col>
+                    <Col>
+                        <AutocompleteUserSearch/>
+                    </Col>
                     <Col style={{display: 'flex', justifyContent: 'end'}}>
-                {loggedInText}
+                {displayLogin}
                     </Col>
                 </Row>
             </Nav>

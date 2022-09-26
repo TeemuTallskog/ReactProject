@@ -171,6 +171,19 @@ app.get("/posts" ,urlencodedParser, (req, res) => {
     })();
 });
 
+app.get("/users", urlencodedParser, (req, res) =>{
+    let sql = "SELECT u.username, u.user_id FROM user u WHERE u.username LIKE ?";
+    (async() => {
+        req.query.username += "%";
+        const response = await query(sql, [req.query.username]);
+        if(response){
+            res.status(202).json({users: response});
+        }else{
+            res.status(500).json({error: "internal server error"});
+        }
+    })();
+});
+
 app.listen(port, () => {
     console.log(`App listening on port http://localhost:${port}`)
 })
