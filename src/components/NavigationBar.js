@@ -14,7 +14,9 @@ function NavigationBar(){
         window.location.reload(false);
     }
 
-    let loggedInText = <></>;
+    let loggedInText = <><NavLink as={Link} to="/LogInForm">LogIn</NavLink>
+    <NavLink as={Link} to="/SignUpForm">SignUp</NavLink></>;
+
     if(localStorage.getItem("username")){
         loggedInText = <>
             <Navbar.Text>Logged in as: {localStorage.getItem("username")}</Navbar.Text>
@@ -32,8 +34,6 @@ function NavigationBar(){
                 <Row style={{width: '100%'}}>
                     <Col style={{display: 'flex'}}>
                 <NavLink as={Link} to="/HomePage">Home</NavLink>
-                <NavLink as={Link} to="/LogInForm">LogIn</NavLink>
-                <NavLink as={Link} to="/SignUpForm">SignUp</NavLink>
                     </Col>
                     <Col style={{display: 'flex', justifyContent: 'end'}}>
                 {loggedInText}
