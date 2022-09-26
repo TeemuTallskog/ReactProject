@@ -13,3 +13,10 @@ created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (post_id),
 FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS follow (
+user_id INT NOT NULL,
+following_user_id INT NOT NULL,
+FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE,
+FOREIGN KEY (following_user_id) REFERENCES user (user_id) ON DELETE CASCADE
+);

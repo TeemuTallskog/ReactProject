@@ -75,7 +75,7 @@ function PostForm() {
                         onChange={onChange}
                         isInvalid={!!errors.content}
                     />
-                    <p style={{color: formData.content.length === 254 ? "#ff3333" : ""}}>{count}/254</p>
+                    <p style={{color: formData.content.length > 253 ? "#ff3333" : ""}}>{count}/254</p>
                     <Form.Control.Feedback type="invalid">
                         {errors.content}
                     </Form.Control.Feedback>

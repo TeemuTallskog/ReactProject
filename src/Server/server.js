@@ -30,6 +30,7 @@ con.connect(function(err) {
 
 const query = util.promisify(con.query).bind(con);
 
+//Verifies JWT token and returns a user object if valid or null
 const verifyJWT = function (req, res){
     if(req.headers.authorization){
         try{
@@ -146,6 +147,24 @@ app.post("/post", urlencodedParser, (req, res) => {
         if(response){
             res.status(202).json({message: 'Success'});
             console.log("Success");
+        }else{
+            res.status(500).json({error: "Internal server error"});
+        }
+    })();
+});
+
+app.get("/posts" ,urlencodedParser, (req, res) => {
+    const user = verifyJWT(req);
+    if(!user) return;
+    let sql = "SELECT p.*, u.username FROM post p" +
+        " INNER JOIN follow f ON (p.user_id = f.following_user_id AND f.user_id = ?)" +
+        " INNER JOIN user u ON p.user_id = u.user_id" +
+        " UNION ALL SELECT p.*, u.username FROM post p" +
+        " INNER JOIN user u ON (p.user_id = u.user_id AND p.user_id = ?) ORDER BY created DESC";
+    (async() =>{
+        const response = await query(sql, [user.user_id, user.user_id]);
+        if(response){
+            res.status(202).json({posts: response});
         }else{
             res.status(500).json({error: "Internal server error"});
         }
