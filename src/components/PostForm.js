@@ -3,6 +3,7 @@ import {useState} from 'react';
 import Col from 'react-bootstrap/Col'
 import Button from "react-bootstrap/Button";
 import React from 'react';
+import {Row} from "react-bootstrap";
 
 function PostForm() {
 
@@ -62,9 +63,11 @@ function PostForm() {
     }
 
     return(
-        <div>
+        <div style={{margin: '10px'}}>
             <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" md="4" controlId="email" as={Col}>
+                <Form.Group className="mb-3"  controlId="email" as={Col}>
+                    <Row>
+                        <Col xs={10}>
                     <Form.Control
                         type="textarea"
                         rows={3}
@@ -75,14 +78,18 @@ function PostForm() {
                         onChange={onChange}
                         isInvalid={!!errors.content}
                     />
-                    <p style={{color: formData.content.length > 253 ? "#ff3333" : ""}}>{count}/254</p>
+                    <p style={{color: formData.content.length > 253 ? "#ff3333" : "", textAlign: 'right'}}>{count}/254</p>
                     <Form.Control.Feedback type="invalid">
                         {errors.content}
                     </Form.Control.Feedback>
+                        </Col>
+                        <Col>
+                    <Button variant="primary" type="submit" style={{width: '100%'}}>
+                        Post
+                    </Button>
+                        </Col>
+                    </Row>
                 </Form.Group>
-                <Button variant="primary" type="submit">
-                    Post
-                </Button>
             </Form>
         </div>
     );

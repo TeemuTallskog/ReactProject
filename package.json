@@ -13,6 +13,7 @@
     "dotenv": "^16.0.2",
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.4",
     "mysql": "^2.18.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
@@ -43,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-router-dom": "^6.4.1"
   }
 }

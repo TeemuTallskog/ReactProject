@@ -1,5 +1,7 @@
 import {useEffect, useState} from "react";
 import {Card} from "react-bootstrap";
+import Post from "./Post";
+import PostForm from "./PostForm";
 
 function HomePage() {
 
@@ -29,19 +31,12 @@ function HomePage() {
     }, []);
 
     const generatePosts = posts.map((item) => {
-        return <Card>
-            <Card.Body>
-                <Card.Title>{item.username}</Card.Title>
-                <Card.Text>
-                    {item.content}
-                </Card.Text>
-                <Card.Footer>{new Date(item.created).toLocaleString("fi-FI")}</Card.Footer>
-            </Card.Body>
-        </Card>
+        return <Post post={item} key={item.post_id}/>
     })
 
     return (
-        <div>
+        <div style={{margin: 'auto', width: '50%', padding:'10px' }}>
+            <PostForm/>
             <div>{generatePosts}</div>
         </div>
     )

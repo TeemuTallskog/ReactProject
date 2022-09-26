@@ -66,9 +66,9 @@ function LogInForm() {
     }
 
     return(
-        <div>
+        <div style={{margin: 'auto', width: '50%', padding:'10px'}}>
             <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" md="4" controlId="email" as={Col}>
+                <Form.Group className="mb-3" md="5" controlId="email" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Email address</Form.Label>
                     <Form.Control
                         type="email"
@@ -83,7 +83,7 @@ function LogInForm() {
                         {errors.email}
                     </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group className="mb-3" md="4" controlId="password" as={Col}>
+                <Form.Group className="mb-3" md="5" controlId="password" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Password</Form.Label>
                     <Form.Control
                         type="password"

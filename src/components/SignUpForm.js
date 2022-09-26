@@ -68,9 +68,9 @@ function SignUpForm() {
     }
 
     return(
-        <div>
+        <div style={{margin: 'auto', width: '50%', padding:'10px'}}>
             <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" md="4" controlId="email" as={Col}>
+                <Form.Group className="mb-3" md="5" controlId="email" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Email address</Form.Label>
                     <Form.Control
                         type="email"
@@ -85,7 +85,7 @@ function SignUpForm() {
                         {errors.email}
                     </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group className="mb-3" md="4" controlId="username" as={Col}>
+                <Form.Group className="mb-3" md="5" controlId="username" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Email address</Form.Label>
                     <Form.Control
                         type="text"
@@ -100,7 +100,7 @@ function SignUpForm() {
                         {errors.username}
                     </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group className="mb-3" md="4" controlId="password" as={Col}>
+                <Form.Group className="mb-3" md="5" controlId="password" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Password</Form.Label>
                     <Form.Control
                         type="password"
@@ -115,7 +115,7 @@ function SignUpForm() {
                         {errors.password}
                     </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group className="mb-3" md="4" controlId="confirmPassword" as={Col}>
+                <Form.Group className="mb-3" md="5" controlId="confirmPassword" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Confirm password</Form.Label>
                     <Form.Control
                         type = "password"
