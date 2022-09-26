@@ -134,6 +134,24 @@ app.post("/signup", urlencodedParser, (req, res) => {
     })()
 });
 
+app.post("/post", urlencodedParser, (req, res) => {
+    const user = verifyJWT(req, res);
+    if(!user){
+        console.log("invalid login");
+        return;
+    }
+    (async() =>{
+        let sql = "INSERT INTO post (user_id, content) VALUES (?,?)"
+        const response = await query(sql,[user.user_id, req.body.content]);
+        if(response){
+            res.status(202).json({message: 'Success'});
+            console.log("Success");
+        }else{
+            res.status(500).json({error: "Internal server error"});
+        }
+    })();
+});
+
 app.listen(port, () => {
     console.log(`App listening on port http://localhost:${port}`)
 })

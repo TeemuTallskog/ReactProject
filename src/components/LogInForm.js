@@ -8,7 +8,6 @@ function LogInForm() {
 
     const [formData, setFormData] = useState({
         email: '',
-        username: '',
         password: ''
     });
 
@@ -41,8 +40,11 @@ function LogInForm() {
                 })
             })
             if(response.status === 202){
-                localStorage.setItem("accessToken", response.body.accessToken);
-                localStorage.setItem("username", response.body.username);
+                response.json().then((data) =>{
+                    console.log(data);
+                    localStorage.setItem("accessToken", data.accessToken);
+                    localStorage.setItem("username", data.username);
+                })
                 event.target.submit();
             }
             if(response.status === 401){
