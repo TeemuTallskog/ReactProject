@@ -154,7 +154,7 @@ app.post("/post", urlencodedParser, (req, res) => {
 });
 
 app.get("/posts" ,urlencodedParser, (req, res) => {
-    const user = verifyJWT(req);
+    const user = verifyJWT(req, res);
     if(!user) return;
     let sql = "SELECT p.*, u.username FROM post p" +
         " INNER JOIN follow f ON (p.user_id = f.following_user_id AND f.user_id = ?)" +
