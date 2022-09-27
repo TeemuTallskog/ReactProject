@@ -11,30 +11,24 @@ const axios = require('axios');
 function AutocompleteUserSearch(){
     const [open, setOpen] = React.useState(false);
     const [options, setOptions] = React.useState([]);
-    const loading = open && options.length === 0;
+    const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState({});
 
-    React.useEffect(() => {
-        let active = true;
 
-        if (!loading) {
-            return undefined;
-        }
-
-        (async () => {
-            const response = await axios.get('http://localhost:8080/users',{ params: { username: search.input }});
-            if (active) {
+    const onChange = (e) => {
+        setSearch({...search, [e.target.name]: e.target.value});
+        if(!loading) {
+            (async () => {
+                setLoading(true);
+                const response = await axios.get('http://localhost:8080/users', {params: {username: search.input}});
                 console.log(response);
                 setOptions([...response.data.users]);
-            }
-        })();
-
-        return () => {
-            active = false;
-        };
-    }, [loading, search]);
-
-    const onChange = (e) => setSearch({...search, [e.target.name]: e.target.value})
+                setTimeout(function(){
+                    setLoading(false);
+                }, 500)
+            })();
+        }
+    }
 
     React.useEffect(() => {
         if (!open) {
@@ -43,7 +37,7 @@ function AutocompleteUserSearch(){
     }, [open]);
 
     return (
-        <Autocomplete
+        <Autocomplete filterOptions={(options) => options}
             id="userSearch"
             sx={{ width: 300 }}
             open={open}
@@ -53,7 +47,7 @@ function AutocompleteUserSearch(){
             onClose={() => {
                 setOpen(false);
             }}
-            isOptionEqualToValue={(option, value) => option.username === value.username}
+            isOptionEqualToValue={(option, value) => option.username === search.username}
             getOptionLabel={(option) => option.username}
             options={options}
             loading={loading}
