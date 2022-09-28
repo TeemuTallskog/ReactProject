@@ -1,0 +1,11 @@
+.button {
+    padding: 5px;
+    background: transparent;
+    border: none;
+    outline: none;
+    margin: auto;
+}
+
+.button:hover{
+    transform: scale(1.2);
+}

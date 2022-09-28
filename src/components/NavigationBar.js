@@ -28,7 +28,7 @@ function NavigationBar(){
 
     return(
         <>
-        <Navbar style={{display: 'block', margin: 'auto', width: '50%'}}>
+        <Navbar style={{display: 'block', margin: 'auto', width: '50%'}} sticky="top">
             <Navbar.Toggle aria-controls="navbarScroll" data-bs-target="#navbarScroll"/>
             <Navbar.Collapse id="navbarScroll"/>
             <Nav className="me-auto">

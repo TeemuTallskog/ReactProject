@@ -48,7 +48,7 @@ function LogInForm() {
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("username", data.username);
                     navigate('/HomePage');
-                    event.target.submit();
+                    window.location.reload(false);
                 })
             }
             if(response.status === 401){

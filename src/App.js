@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import LogInForm from "./components/LogInForm";
 import HomePage from "./components/HomePage";
 import NavigationBar from "./components/NavigationBar";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Redirect, Route, Routes} from "react-router-dom";
 
 
 function App() {
@@ -12,8 +12,8 @@ function App() {
       <div className="App">
           <BrowserRouter>
               <Routes>
-                  <Route path="/" element={<NavigationBar/>}>
-                  <Route index path='HomePage' element={<HomePage/>}/>
+                  <Route path='/' element={<NavigationBar/>}>
+                  <Route index path='/HomePage' element={<HomePage/>}/>
                   <Route path='LogInForm' element={<LogInForm/>}/>
                   <Route path='SignUpForm' element={<SignUpForm/>}/>
                 </Route>

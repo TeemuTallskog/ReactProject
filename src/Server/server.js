@@ -153,16 +153,20 @@ app.post("/post", urlencodedParser, (req, res) => {
     })();
 });
 
+//Returns all posts and their author data, total likes, user like status from users that the logged in user is following + logged in users own posts
 app.get("/posts" ,urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
-    let sql = "SELECT p.*, u.username FROM post p" +
+    let sql = "SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes," +
+        " (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = ?)>0 AS user_like_status FROM post p" +
         " INNER JOIN follow f ON (p.user_id = f.following_user_id AND f.user_id = ?)" +
         " INNER JOIN user u ON p.user_id = u.user_id" +
-        " UNION ALL SELECT p.*, u.username FROM post p" +
+        " UNION ALL SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
+        "(SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = u.user_id)>0 AS user_like_status FROM post p" +
         " INNER JOIN user u ON (p.user_id = u.user_id AND p.user_id = ?) ORDER BY created DESC";
+
     (async() =>{
-        const response = await query(sql, [user.user_id, user.user_id]);
+        const response = await query(sql, [user.user_id, user.user_id, user.user_id]);
         if(response){
             res.status(202).json({posts: response});
         }else{
@@ -183,6 +187,37 @@ app.get("/users", urlencodedParser, (req, res) =>{
         }
     })();
 });
+
+app.post("/like", urlencodedParser, (req, res) => {
+    const user = verifyJWT(req, res);
+    if(!user) return;
+    let sql = "SELECT COUNT(*) as foundCount FROM likes WHERE post_id = ? AND user_id = ?";
+    (async() =>{
+        const count = await query(sql, [req.body.post_id, user.user_id]);
+        if(!count) {
+            res.status(500).json({error: "internal server error"});
+            return;
+        };
+        if(count[0].foundCount === 0){
+            //Likes the post and returns total likes of the post
+            sql = "INSERT INTO likes (post_id, user_id) VALUES (?, ?)"
+            const resp = await query(sql, [req.body.post_id, user.user_id]);
+            if(!resp) return;
+            sql = "SELECT COUNT(*) AS total_likes FROM likes WHERE post_id = ?";
+            const response = await query(sql, [req.body.post_id]);
+            res.status(202).json({total_likes: response[0].total_likes, user_like_status: 1});
+        }
+        if(count[0].foundCount  === 1){
+            //Removes users like from the post and returns total likes of the post
+            sql = "DELETE FROM likes WHERE post_id = ? AND user_id = ?";
+            const resp = await query(sql, [req.body.post_id, user.user_id]);
+            if(!resp) return;
+            sql = "SELECT COUNT(*) AS total_likes FROM likes WHERE post_id = ?";
+            const response = await query(sql, [req.body.post_id]);
+            res.status(202).json({total_likes: response[0].total_likes, user_like_status: 0});
+        }
+    })().catch((e) =>{console.log(e)});
+})
 
 app.listen(port, () => {
     console.log(`App listening on port http://localhost:${port}`)

@@ -51,7 +51,7 @@ function SignUpForm() {
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("username", data.username);
                     navigate('/HomePage');
-                    event.target.submit();
+                    window.location.reload(false);
                 })
             }
             if(response.status === 409){
@@ -76,7 +76,7 @@ function SignUpForm() {
 
     return(
         <div style={{margin: 'auto', width: '50%', padding:'10px'}}>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} >
                 <Form.Group className="mb-3" md="5" controlId="email" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Email address</Form.Label>
                     <Form.Control
