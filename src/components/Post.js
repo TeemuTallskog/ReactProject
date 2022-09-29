@@ -4,9 +4,12 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import '../resources/css/iconButton.css';
 import {useEffect, useState} from "react";
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import {useNavigate, createSearchParams} from "react-router-dom";
+
 
 function Post(post){
-
+    const navigate = useNavigate();
     const [likeStatus, setLikeStatus] = useState(post.post.user_like_status);
     const [totalLikes, setTotalLikes] = useState(post.post.total_likes);
     const [likeIcon, setLikeIcon] = useState(false);
@@ -34,7 +37,7 @@ function Post(post){
     }
 
     useEffect(()=>{
-        if(likeStatus === 1){
+        if(likeStatus == 1){
             setLikeIcon(<FavoriteIcon/>);
         }else{
             setLikeIcon(<FavoriteBorderIcon/>);
@@ -44,15 +47,21 @@ function Post(post){
     return(
         <Card style={{margin: '10px'}}>
             <Card.Body>
+                {post.post.reply_to && <Card.Header>Reply</Card.Header>}
                 <Card.Title>{post.post.username}</Card.Title>
                 <Card.Text>
                     {post.post.content}
                 </Card.Text>
-                <Row style={{width: '10%', margin: 'auto'}}>
+                <Row style={{width: '50%', margin: 'auto', padding: '0'}}>
                     <Col>
-                <button onClick={likePost} className='button'>{likeIcon}</button>
+                        <button className='button' onClick={() => navigate({
+                            pathname: 'Post',
+                            search: `?${createSearchParams({post_id: post.post.post_id})}`
+                        })}><ChatBubbleOutlineIcon/></button>
+                        <p>{post.post.reply_count}</p>
                     </Col>
                     <Col>
+                        <button onClick={likePost} className='button'>{likeIcon}</button>
                         <p>{totalLikes}</p>
                     </Col>
                 </Row>

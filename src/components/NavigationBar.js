@@ -2,7 +2,6 @@ import {Nav, Navbar, NavLink, Row} from "react-bootstrap";
 import {Outlet, Link} from "react-router-dom";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import {useCallback, useEffect} from "react";
 import AutocompleteUserSearch from "./AutocompleteUserSearch";
 
 
@@ -34,7 +33,7 @@ function NavigationBar(){
             <Nav className="me-auto">
                 <Row style={{width: '100%'}}>
                     <Col style={{display: 'flex'}}>
-                <NavLink as={Link} to="/HomePage">Home</NavLink>
+                <NavLink as={Link} to="/">Home</NavLink>
                     </Col>
                     <Col>
                         <AutocompleteUserSearch/>

@@ -50,7 +50,7 @@ function SignUpForm() {
                     console.log(data);
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("username", data.username);
-                    navigate('/HomePage');
+                    navigate('/');
                     window.location.reload(false);
                 })
             }

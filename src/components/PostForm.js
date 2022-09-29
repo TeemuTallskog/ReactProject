@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import React from 'react';
 import {Row} from "react-bootstrap";
 
-function PostForm() {
+function PostForm(props) {
 
     const [formData, setFormData] = useState({
         content: ''
@@ -40,7 +40,8 @@ function PostForm() {
                     'Authorization': localStorage.getItem('accessToken')
                 },
                 body: JSON.stringify({
-                    content: formData.content
+                    content: formData.content,
+                    reply_to: props.replyTo
                 })
             })
             if(response.status === 202){
@@ -85,7 +86,7 @@ function PostForm() {
                         </Col>
                         <Col>
                     <Button variant="primary" type="submit" style={{width: '100%'}}>
-                        Post
+                        {props.isReply ? "Reply" : "Post"}
                     </Button>
                         </Col>
                     </Row>
