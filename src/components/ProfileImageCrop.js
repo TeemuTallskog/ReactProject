@@ -1,101 +1,148 @@
-import {useState} from "react";
-import ReactCrop from 'react-image-crop';
+import {useRef, useState} from "react";
+import ReactCrop, {centerCrop, makeAspectCrop, Crop, PixelCrop} from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import {Form, Button, Container} from "react-bootstrap";
+import {UseDebounceEffect} from './ImageCrop/UseDebounceEffect'
+import {CanvasPreview} from './ImageCrop/CanvasPreview'
+import axios from "axios";
 
-function ProfileImageCrop() {
-    const [srcImg, setSrcImg] = useState(null);
-    const [image, setImage] = useState(null);
-    const [crop, setCrop] = useState({aspect: 1 / 1});
-    const [result, setResult] = useState(null);
+function centerAspectCrop(
+    mediaWidth,
+    mediaHeight,
+    aspect,
+) {
+    return centerCrop(
+        makeAspectCrop(
+            {
+                unit: '%',
+                width: 90,
+            },
+            aspect,
+            mediaWidth,
+            mediaHeight,
+        ),
+        mediaWidth,
+        mediaHeight,
+    )
+}
 
-    const handleImage = async (event) => {
-        console.log(event.target.files[0]);
-        console.log(srcImg);
-        const url = URL.createObjectURL(event.target.files[0])
-        console.log(url);
-        setSrcImg(url);
-        console.log(srcImg);
-        console.log(event.target.files[0]);
-    };
+function ProfileImageCrop(){
+    const [imgSrc, setImgSrc] = useState('')
+    const previewCanvasRef = useRef(null)
+    const imgRef = useRef(null)
+    const [crop, setCrop] = useState()
+    const [completedCrop, setCompletedCrop] = useState()
+    const [scale, setScale] = useState(1)
+    const [aspect, setAspect] = useState(1 / 1)
 
-    const getCroppedImg = async () => {
-        console.log(image);
-        try {
-            const canvas = document.createElement("canvas");
-            const scaleX = image.naturalWidth / image.width;
-            const scaleY = image.naturalHeight / image.height;
-            canvas.width = crop.width;
-            canvas.height = crop.height;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(
-                image,
-                crop.x * scaleX,
-                crop.y * scaleY,
-                crop.width * scaleX,
-                crop.height * scaleY,
-                0,
-                0,
-                crop.width,
-                crop.height
-            );
-
-            const base64Image = canvas.toDataURL("image/jpeg", 1);
-            setResult(base64Image);
-            console.log(result);
-        } catch (e) {
-            console.log(e);
-            console.log("crop the image");
+    function onSelectFile(e) {
+        if (e.target.files && e.target.files.length > 0) {
+            setCrop(undefined) // Makes crop preview update between images.
+            const reader = new FileReader()
+            reader.addEventListener('load', () =>
+                setImgSrc(reader.result.toString() || ''),
+            )
+            reader.readAsDataURL(e.target.files[0])
         }
-    };
+    }
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        console.log(result);
+    function onImageLoad(e) {
+        if (aspect) {
+            const { width, height } = e.currentTarget
+            setCrop(centerAspectCrop(width, height, aspect))
+        }
+    }
+
+    UseDebounceEffect(
+        async () => {
+            if (
+                completedCrop?.width &&
+                completedCrop?.height &&
+                imgRef.current &&
+                previewCanvasRef.current
+            ) {
+                // We use canvasPreview as it's much faster than imgPreview.
+                CanvasPreview(
+                    imgRef.current,
+                    previewCanvasRef.current,
+                    completedCrop,
+                    scale,
+                    0,
+                )
+            }
+        },
+        100,
+        [completedCrop, scale],
+    )
+
+    const handleSubmit = () =>{
+        console.log(previewCanvasRef.current.toDataURL("image/jpeg", 0.5));
+        const data = new FormData();
+        data.append('image', previewCanvasRef.current.toDataURL("image/jpeg", 0.5));
+
+        fetch('http://localhost:8080/upload/profile_img',{
+            method: 'POST',
+            headers:{
+                'authorization': localStorage.getItem('accessToken')
+            },
+            body: data
+        })
     }
 
     return (
-        <Container className="container" fluid="md">
-            <h5 className="header">React Image Crop</h5>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Select Image you want to crop</Form.Label>
-                    <div>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImage}
-                        />
-                    </div>
-                    <div>
-                        {srcImg && (
-                            <div>
-                                <ReactCrop
-                                    style={{maxWidth: "50%"}}
-                                    src={srcImg}
-                                    onImageLoaded={setImage}
-                                    crop={crop}
-                                    onChange={setCrop}
-                                />
-                                <Button className="cropButton" onClick={getCroppedImg}
-                                >
-                                    crop
-                                </Button>
-                            </div>
-                        )}
-                        {result && (
-                            <div>
-                                <img src={result} alt="cropped"/>
-                            </div>
-                        )}
-                    </div>
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
-        </Container>
-    );
+        <div className="App">
+            <div className="Crop-Controls">
+                <input type="file" accept="image/*" onChange={onSelectFile} />
+                <div>
+                    <label htmlFor="scale-input">Scale: </label>
+                    <input
+                        id="scale-input"
+                        type="number"
+                        step="0.1"
+                        value={scale}
+                        disabled={!imgSrc}
+                        onChange={(e) => setScale(e.target.value)}
+                    />
+                </div>
+            </div>
+            {imgSrc && (
+                <ReactCrop
+                    crop={crop}
+                    onChange={(_, percentCrop) => setCrop(percentCrop)}
+                    onComplete={(c) => setCompletedCrop(c)}
+                    aspect={aspect}
+                >
+                    <img
+                        ref={imgRef}
+                        alt="Crop me"
+                        src={imgSrc}
+                        style={{
+                            transform: `scale(${scale})`,
+                            width: 400,
+                            height: 'auto',
+                        }}
+                        onLoad={onImageLoad}
+                    />
+                </ReactCrop>
+            )}
+            <div>
+                {completedCrop && (
+                    <canvas
+                        ref={previewCanvasRef}
+                        style={{
+                            borderRadius: '50%',
+                            border: '1px solid black',
+                            width: 300,
+                            height: 300,
+                        }}
+                    />
+                )}
+            </div>
+            <Button onClick={handleSubmit}>Submit</Button>
+        </div>
+    )
 }
+
+
 
 export default ProfileImageCrop;

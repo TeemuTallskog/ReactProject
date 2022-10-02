@@ -6,7 +6,7 @@ import '../resources/css/iconButton.css';
 import {useEffect, useState} from "react";
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import {useNavigate, createSearchParams} from "react-router-dom";
-
+import profileImg from '../resources/images/profile_img_default.png'
 
 function Post(post){
     const navigate = useNavigate();
@@ -48,6 +48,7 @@ function Post(post){
         <Card style={{margin: '10px'}}>
             <Card.Body>
                 {post.post.reply_to && <Card.Header>Reply</Card.Header>}
+                <img style={{borderRadius: '50%', width: '48px'}}src={post.post.profile_img? post.post.profile_img : profileImg}/>
                 <Card.Title>{post.post.username}</Card.Title>
                 <Card.Text>
                     {post.post.content}

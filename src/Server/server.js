@@ -7,6 +7,10 @@ const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+const multer = require('multer');
+const upload = multer();
 
 const urlencodedParser = bodyParser.urlencoded({extended: false});
 app.use(bodyParser.urlencoded({extended: false}));
@@ -31,10 +35,11 @@ con.connect(function(err) {
 const query = util.promisify(con.query).bind(con);
 
 //Verifies JWT token and returns a user object if valid or null
-const verifyJWT = function (req, res){
+const verifyJWT = function (req, res, next){
     if(req.headers.authorization){
         try{
             const verified = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY);
+            if(next) next();
             return verified.user;
         }catch (e) {
             res.status(401).json({
@@ -139,7 +144,7 @@ app.get("/post", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
     (async() => {
-        let sql = "SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
+        let sql = "SELECT p.*, u.username, u.profile_img, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
             "(SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = ?)>0 AS user_like_status, " +
             "(SELECT COUNT(*) FROM post WHERE post.reply_to = p.post_id) AS reply_count FROM post p " +
             "INNER JOIN user u ON p.user_id = u.user_id " +
@@ -177,12 +182,12 @@ app.post("/post", urlencodedParser, (req, res) => {
 app.get("/posts" ,urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
-    let sql = "SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes," +
+    let sql = "SELECT p.*, u.username, u.profile_img, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes," +
         " (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = ?)>0 AS user_like_status," +
         " (SELECT COUNT(*) FROM post WHERE post.reply_to = p.post_id) AS reply_count FROM post p" +
         " INNER JOIN follow f ON (p.user_id = f.following_user_id AND f.user_id = ?)" +
         " INNER JOIN user u ON p.user_id = u.user_id" +
-        " UNION ALL SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
+        " UNION ALL SELECT p.*, u.username, u.profile_img, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
         "(SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = u.user_id)>0 AS user_like_status," +
         "(SELECT COUNT(*) FROM post WHERE post.reply_to = p.post_id) AS reply_count FROM post p" +
         " INNER JOIN user u ON (p.user_id = u.user_id AND p.user_id = ?) ORDER BY created DESC";
@@ -200,7 +205,7 @@ app.get("/posts" ,urlencodedParser, (req, res) => {
 app.get("/replies", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
-    let sql = "SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
+    let sql = "SELECT p.*, u.username, u.profile_img, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
         "(SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = ?)>0 AS user_like_status, " +
         "(SELECT COUNT(*) FROM post WHERE post.reply_to = p.post_id) AS reply_count FROM post p " +
         "INNER JOIN user u ON p.user_id = u.user_id " +
@@ -216,7 +221,7 @@ app.get("/replies", urlencodedParser, (req, res) => {
 });
 
 app.get("/users", urlencodedParser, (req, res) =>{
-    let sql = "SELECT u.username, u.user_id FROM user u WHERE u.username LIKE ?";
+    let sql = "SELECT u.username, u.user_id, u.profile_img, FROM user u WHERE u.username LIKE ?";
     (async() => {
         req.query.username += "%";
         const response = await query(sql, [req.query.username]);
@@ -318,9 +323,41 @@ app.get("/myFollows", urlencodedParser, (req, res)=>{
     })();
 })
 
-app.post("/upload/profile_img", urlencodedParser, (req, res) =>{
+app.post("/upload/profile_img", upload.array(), (req, res) =>{
     const user = verifyJWT(req,res);
     if(!user) return;
+    console.log(req.body);
+    if(!req.body.image) return;
+    console.log("here");
+    try {
+        (async () => {
+            const filename = uuidv4() + ".png";
+            const base64data = req.body.image.split(";base64,").pop();
+            fs.writeFile("uploads/" + filename, base64data, 'base64', function(err) {
+                if(err){
+                    console.log(err);
+                    throw err;
+                }
+            });
+            let imageUrl = "http://localhost:8080/images?url=" + filename;
+            let sql = "UPDATE user SET profile_img = ? WHERE user.user_id = ?";
+            const response = await query(sql, [imageUrl, user.user_id]);
+            res.status(202).json({message: "success"});
+        })()
+    }catch(e){
+        console.log(e);
+        res.status(500).json({error: 'internal server error'});
+    }
+})
+
+app.get("/images", urlencodedParser, (req, res) =>{
+    let filename = req.query.url;
+    try{
+        res.sendFile(__dirname + "/uploads/" + filename);
+    }catch(e){
+        console.log(e);
+        res.status(404).json({error: "not found"});
+    }
 })
 
 app.listen(port, () => {
