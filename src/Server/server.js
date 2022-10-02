@@ -12,7 +12,7 @@ const urlencodedParser = bodyParser.urlencoded({extended: false});
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-require('dotenv').config({path: '../../.env'});
+require('dotenv').config({path: '.env'});
 
 const con = mysql.createConnection({
     host: "localhost",
@@ -245,6 +245,77 @@ app.post("/like", urlencodedParser, (req, res) => {
         const response = await query(sql, [req.body.post_id]);
         res.status(202).json({total_likes: response[0].total_likes, user_like_status: !count[0].foundCount});
     })().catch((e) =>{console.log(e)});
+})
+
+app.get("/myInfo", urlencodedParser, (req, res) => {
+    const user = verifyJWT(req, res);
+    if(!user) return;
+
+    let follows = "SELECT COUNT(*) as follows FROM follow WHERE user_id = ?";
+    let followers = "SELECT COUNT(*) as followers FROM follow WHERE following_user_id = ?";
+    let posts = "SELECT COUNT(*) as posts FROM post WHERE user_id = ?";
+
+    (async() => {
+        const response1 = await query(follows, [user.user_id]);
+        const response2 = await query(followers, [user.user_id]);
+        const response3 = await query(posts, [user.user_id]);
+        if(response1 && response2 && response3){
+            res.status(202).json({follows: response1[0].follows, followers: response2[0].followers, posts: response3[0].posts});
+        }else{
+            res.status(500).json({error: "internal server error"});
+        }
+    })().catch((e) =>{console.log(e)});
+})
+
+app.get("/myPosts", urlencodedParser, (req, res)=>{
+     const user = verifyJWT(req, res);
+    if(!user) return;
+
+    let sql = "SELECT * FROM post WHERE user_id = ?";
+
+    (async() => {
+        const response = await query(sql, [user.user_id]);
+
+        if(response){
+            res.status(202).json({posts: response});
+        }else{
+            res.status(500).json({error: "internal server error"});
+        }
+    })();
+})
+
+app.get("/myFollowers", urlencodedParser, (req, res)=>{
+     const user = verifyJWT(req, res);
+    if(!user) return;
+
+    let sql = "SELECT follow.user_id, user.username FROM follow INNER JOIN user ON user.user_id = follow.user_id WHERE follow.following_user_id = 1";
+
+    (async() => {
+        const response = await query(sql, [user.user_id]);
+
+        if(response){
+            res.status(202).json({followers: response});
+        }else{
+            res.status(500).json({error: "internal server error"});
+        }
+    })();
+})
+
+app.get("/myFollows", urlencodedParser, (req, res)=>{
+     const user = verifyJWT(req, res);
+    if(!user) return;
+
+   let sql = "SELECT follow.following_user_id AS userId, user.username FROM follow INNER JOIN user ON user.user_id = follow.following_user_id WHERE follow.user_id = ?";
+
+    (async() => {
+        const response = await query(sql, [user.user_id]);
+
+        if(response){
+            res.status(202).json({follows: response});
+        }else{
+            res.status(500).json({error: "internal server error"});
+        }
+    })();
 })
 
 app.listen(port, () => {

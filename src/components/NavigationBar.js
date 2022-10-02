@@ -18,12 +18,18 @@ function NavigationBar(){
     let displayLogin= <><NavLink as={Link} to="/LogInForm">LogIn</NavLink>
         <NavLink as={Link} to="/SignUpForm">SignUp</NavLink></>;
 
+    let displayMyAccount = <></>
+
     if(localStorage.getItem("username")){
         displayLogin = <>
             <Navbar.Text>Logged in as: {localStorage.getItem("username")}</Navbar.Text>
             <Button variant="link" onClick={logout}>Logout</Button>
         </>
+
+        displayMyAccount = <NavLink as={Link} to="/MyAccount">My Account</NavLink>
     }
+
+
 
     return(
         <>
@@ -34,6 +40,10 @@ function NavigationBar(){
                 <Row style={{width: '100%'}}>
                     <Col style={{display: 'flex'}}>
                 <NavLink as={Link} to="/">Home</NavLink>
+                {displayMyAccount}
+                    </Col>
+                    <Col style={{display: 'flex'}}>
+                
                     </Col>
                     <Col>
                         <AutocompleteUserSearch/>
