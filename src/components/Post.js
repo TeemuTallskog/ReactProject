@@ -55,7 +55,7 @@ function Post(post){
                 <Row style={{width: '50%', margin: 'auto', padding: '0'}}>
                     <Col>
                         <button className='button' onClick={() => navigate({
-                            pathname: 'Post',
+                            pathname: '/Post',
                             search: `?${createSearchParams({post_id: post.post.post_id})}`
                         })}><ChatBubbleOutlineIcon/></button>
                         <p>{post.post.reply_count}</p>

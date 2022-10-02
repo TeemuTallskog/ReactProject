@@ -46,7 +46,7 @@ function PostForm(props) {
             })
             if(response.status === 202){
                 console.log("Success");
-                event.target.submit();
+                window.location.reload(false);
             }
             if(response.status === 401){
                 setErrors({

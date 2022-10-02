@@ -9,41 +9,40 @@ function PostPage() {
     const [post, setPost] = useState();
     const [replies, setReplies] = useState([]);
 
-    const fetchPost = function(){
-        (async() =>{
-            const response = await axios.get('http://localhost:8080/post',{
-                params:{post_id: searchParams.get("post_id")},
-                headers: {'Authorization' : localStorage.getItem("accessToken")}
-            }).catch((e) => {
-                    console.log(e);
-                    return;
-                });
-            console.log(response.data.post[0]);
-            setPost(response.data.post[0]);
-        })();
-    }
-
-    const fetchReplies = function (){
-        (async() =>{
-            const response = await axios.get('http://localhost:8080/replies',
-                {params: {post_id: searchParams.get("post_id")},
-                    headers: {'Authorization': localStorage.getItem("accessToken")}
-                })
-                .catch((e) =>{
-                    console.log(e);
-                    return;
-                });
-            if(response){
-                console.log(response);
-                setReplies(response.data.post);
-            }
-        })().catch(err => console.log(err));
-    }
-
     useEffect(() =>{
+        const fetchPost = function(){
+            (async() =>{
+                const response = await axios.get('http://localhost:8080/post',{
+                    params:{post_id: searchParams.get("post_id")},
+                    headers: {'Authorization' : localStorage.getItem("accessToken")}
+                }).catch((e) => {
+                    console.log(e);
+                    return;
+                });
+                console.log(response.data.post[0]);
+                setPost(response.data.post[0]);
+            })();
+        }
+
+        const fetchReplies = function (){
+            (async() =>{
+                const response = await axios.get('http://localhost:8080/replies',
+                    {params: {post_id: searchParams.get("post_id")},
+                        headers: {'Authorization': localStorage.getItem("accessToken")}
+                    })
+                    .catch((e) =>{
+                        console.log(e);
+                        return;
+                    });
+                if(response){
+                    console.log(response);
+                    setReplies(response.data.post);
+                }
+            })().catch(err => console.log(err));
+        }
         fetchPost();
         fetchReplies();
-    }, );
+    },[searchParams]);
 
     const generateReplies = replies.map((item) => {
         return <Post post={item} key={item.post_id}/>

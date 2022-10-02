@@ -7,6 +7,7 @@ import NavigationBar from "./components/NavigationBar";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import PostPage from "./components/PostPage";
 import MyAccount from "./components/MyAccount";
+import ProfileImageCrop from "./components/ProfileImageCrop";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
                       <Route path='SignUpForm' element={<SignUpForm/>}/>
                       <Route path='Post' element={<PostPage/>}/>
                       <Route path='MyAccount' element={<MyAccount/>}/>
+                      <Route path='ImageCrop' element={<ProfileImageCrop/>}/>
                       <Route path="*" element={<p>Path not resolved</p>} />
               </Routes>
           </BrowserRouter>

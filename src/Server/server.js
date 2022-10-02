@@ -318,6 +318,11 @@ app.get("/myFollows", urlencodedParser, (req, res)=>{
     })();
 })
 
+app.post("/upload/profile_img", urlencodedParser, (req, res) =>{
+    const user = verifyJWT(req,res);
+    if(!user) return;
+})
+
 app.listen(port, () => {
     console.log(`App listening on port http://localhost:${port}`)
 })
