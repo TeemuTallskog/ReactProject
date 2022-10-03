@@ -1,4 +1,4 @@
-import './App.css';
+import './resources/css/App.css';
 import SignUpForm from "./components/SignUpForm";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import LogInForm from "./components/LogInForm";
@@ -14,6 +14,7 @@ function App() {
       <div className="App">
           <BrowserRouter>
               <NavigationBar/>
+              <div className="navbar-offset"/> {/* Navigation bar offset */}
               <Routes>
                       <Route exact path='/' element={<HomePage/>}/>
                       <Route path='LogInForm' element={<LogInForm/>}/>

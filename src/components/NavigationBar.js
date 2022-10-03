@@ -3,10 +3,10 @@ import {Outlet, Link} from "react-router-dom";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import AutocompleteUserSearch from "./AutocompleteUserSearch";
+import '../resources/css/navigationBar.css';
 
 
-function NavigationBar(){
-
+function NavigationBar() {
 
 
     const logout = () => {
@@ -15,12 +15,12 @@ function NavigationBar(){
         window.location.reload(false);
     }
 
-    let displayLogin= <><NavLink as={Link} to="/LogInForm">LogIn</NavLink>
+    let displayLogin = <><NavLink as={Link} to="/LogInForm">LogIn</NavLink>
         <NavLink as={Link} to="/SignUpForm">SignUp</NavLink></>;
 
     let displayMyAccount = <></>
 
-    if(localStorage.getItem("username")){
+    if (localStorage.getItem("username")) {
         displayLogin = <>
             <Navbar.Text>Logged in as: {localStorage.getItem("username")}</Navbar.Text>
             <Button variant="link" onClick={logout}>Logout</Button>
@@ -30,32 +30,31 @@ function NavigationBar(){
     }
 
 
+    return (
+        <div>
+            <Navbar className="navbar-container" sticky="top">
+                <Navbar.Toggle aria-controls="navbarScroll" data-bs-target="#navbarScroll"/>
+                <Navbar.Collapse id="navbarScroll"/>
+                <Nav className="me-auto">
+                    <div className="navbar-interactions-container">
+                        <div style={{display: 'flex'}}>
+                            <NavLink as={Link} to="/">Home</NavLink>
+                            {displayMyAccount}
+                        </div>
+                        <div style={{display: 'flex'}}>
 
-    return(
-        <>
-        <Navbar style={{display: 'block', margin: 'auto', width: '50%'}} sticky="top">
-            <Navbar.Toggle aria-controls="navbarScroll" data-bs-target="#navbarScroll"/>
-            <Navbar.Collapse id="navbarScroll"/>
-            <Nav className="me-auto">
-                <Row style={{width: '100%'}}>
-                    <Col style={{display: 'flex'}}>
-                <NavLink as={Link} to="/">Home</NavLink>
-                {displayMyAccount}
-                    </Col>
-                    <Col style={{display: 'flex'}}>
-                
-                    </Col>
-                    <Col>
-                        <AutocompleteUserSearch/>
-                    </Col>
-                    <Col style={{display: 'flex', justifyContent: 'end'}}>
-                {displayLogin}
-                    </Col>
-                </Row>
-            </Nav>
-        </Navbar>
+                        </div>
+                        <div>
+                            <AutocompleteUserSearch/>
+                        </div>
+                        <div style={{display: 'flex', justifyContent: 'end'}}>
+                            {displayLogin}
+                        </div>
+                    </div>
+                </Nav>
+            </Navbar>
             <Outlet/>
-        </>
+        </div>
     )
 }
 

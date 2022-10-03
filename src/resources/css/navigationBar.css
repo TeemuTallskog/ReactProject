@@ -1,0 +1,26 @@
+.navbar-container{
+    background-color: rgba(255,255,255,0.9);
+    display: block;
+    margin: auto;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+.navbar-interactions-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.me-auto{
+    justify-content: center;
+    align-items: center;
+}
+.navbar-interactions-container>*{
+    margin-left: 25px;
+    margin-right: 25px;
+}
+

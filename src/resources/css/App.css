@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+.navbar-offset{
+  margin-top: 150px;
+}
+
+@media(min-width: 880px) {
+  .navbar-offset{
+    margin-top: 75px;
+  }
+}
