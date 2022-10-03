@@ -39,20 +39,19 @@ function Post(post) {
         })().catch((e) => console.log(e));
     }
 
-    const getReplyContent = async function () {
-        if (post.post.reply_to) {
+
+    const getReply = async function(){
+        if(post.post.reply_to){
             const response = await axios.get('http://localhost:8080/post', {
                 params: {post_id: post.post.reply_to},
                 headers: {'Authorization': localStorage.getItem("accessToken")}
             }).catch((e) => {
                 console.log(e);
-                setReplyContent(<p>error</p>);
+                setReplyContent(null);
             });
-            let returnString = response.data.post[0].content;
-            if (returnString.length > 18) {
-                returnString = returnString.substring(0, 18) + "...";
-            }
-            setReplyContent(<div><h6>{response.data.post[0].username}:</h6><p>{returnString}</p></div>);
+            response.data.post[0].reply_to = null;
+            response.data.post[0].isEmbedded = true;
+            setReplyContent(response.data.post[0]);
         }
     }
 
@@ -63,16 +62,14 @@ function Post(post) {
             setLikeIcon(<FavoriteBorderIcon/>);
         }
         if (post.post.reply_to) {
-            getReplyContent();
+            getReply();
         }
     }, [likeStatus, post.post.reply_to])
 
     return (
         <Card style={{margin: '10px'}}>
             <Card.Body>
-                {post.post.reply_to && <Card.Header><Link
-                    to={{pathname: '/Post', search: '?post_id=' + post.post.reply_to}}>{replyContent}</Link>
-                </Card.Header>}
+                {replyContent && !post.post.isPostPage && <Post post={replyContent}/>}
                 <div className="post-body">
                     <img  className="post-profile-picture" style={{borderRadius: '50%', width: '48px'}}
                          src={post.post.profile_img ? post.post.profile_img : profileImg}
@@ -100,7 +97,7 @@ function Post(post) {
                         </div>
                     </div>
                 </div>
-                <Card.Footer>{moment(post.post.created).fromNow()}</Card.Footer>
+                {!post.post.isEmbedded && <Card.Footer>{moment(post.post.created).fromNow()}</Card.Footer>}
             </Card.Body>
         </Card>
     )

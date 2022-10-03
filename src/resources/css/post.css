@@ -17,6 +17,7 @@
     justify-content: flex-start;
     align-items: flex-start;
     vertical-align: top;
+    overflow: hidden;
 }
 .post-profile-picture{
     max-height: 48px !important;

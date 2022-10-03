@@ -45,7 +45,8 @@ function PostPage() {
     },[searchParams]);
 
     const generateReplies = replies.map((item) => {
-        return <Post post={item} key={item.post_id}/>
+        item.isPostPage = true;
+        return <Post post={item} key={item.post_id} />
     })
 
     return (
