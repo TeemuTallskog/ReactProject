@@ -1,0 +1,20 @@
+.Autocomplete-container{
+    border-radius: 5px;
+    border: none;
+}
+
+.dark .Autocomplete-container{
+    background-color: rgb(73,81,95);
+}
+
+.dark .MuiAutocomplete-input{
+    color: white;
+}
+
+.dark .search-icon{
+    color: white;
+}
+
+.dark .load-icon{
+    color: white;
+}

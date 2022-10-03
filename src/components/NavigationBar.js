@@ -4,10 +4,24 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import AutocompleteUserSearch from "./AutocompleteUserSearch";
 import '../resources/css/navigationBar.css';
+import {Form, FormCheck} from 'react-bootstrap';
+import {useEffect, useState} from "react";
+import NightsStayIcon from '@mui/icons-material/NightsStay';
 
 
 function NavigationBar() {
 
+    const [darkMode, setDarkMode] = useState(localStorage.getItem("darkMode") ? true : false);
+
+    useEffect(() => {
+        if (darkMode) {
+            localStorage.setItem("darkMode", "true");
+            document.body.classList.add("dark");
+        } else {
+            localStorage.removeItem("darkMode");
+            document.body.classList.remove("dark");
+        }
+    }, [darkMode]);
 
     const logout = () => {
         localStorage.setItem("accessToken", "");
@@ -51,6 +65,15 @@ function NavigationBar() {
                             {displayLogin}
                         </div>
                     </div>
+                    <Form.Check
+                        className="night-mode-switch"
+                        type = "switch"
+                        id="darkMode"
+                        defaultChecked={darkMode}
+                        value={darkMode}
+                        onChange={() => setDarkMode(!darkMode)}
+                        label={<NightsStayIcon/>}
+                    />
                 </Nav>
             </Navbar>
             <Outlet/>

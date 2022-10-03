@@ -1,8 +1,9 @@
-.card{
+.dark .card{
+    background-color: rgb(73,81,95);
 }
 
 .card-body{
-
+    position: relative;
 }
 .card-header{
     background-color: transparent;
@@ -72,4 +73,14 @@
     justify-content: flex-start;
     align-items: center;
     margin: 0px;
+}
+
+.card-text{
+    max-width: 400px;
+    text-align: left;
+    flex-wrap: wrap;
+}
+
+.dark .post-icon{
+    color: white;
 }

@@ -4,6 +4,7 @@ import Col from 'react-bootstrap/Col'
 import Button from "react-bootstrap/Button";
 import React from 'react';
 import {Row} from "react-bootstrap";
+import '../resources/css/postForm.css'
 
 function PostForm(props) {
 
@@ -70,6 +71,7 @@ function PostForm(props) {
                     <Row>
                         <Col xs={10}>
                     <Form.Control
+                        className="post-text-area"
                         type="textarea"
                         rows={3}
                         placeholder="What is happening?"

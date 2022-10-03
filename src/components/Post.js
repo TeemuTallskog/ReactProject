@@ -5,7 +5,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import '../resources/css/iconButton.css';
 import {useEffect, useState} from "react";
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import {useNavigate, createSearchParams, Link} from "react-router-dom";
+import {useNavigate, createSearchParams} from "react-router-dom";
 import profileImg from '../resources/images/profile_img_default.png'
 import axios from "axios";
 import '../resources/css/post.css';
@@ -57,9 +57,9 @@ function Post(post) {
 
     useEffect(() => {
         if (likeStatus == 1) {
-            setLikeIcon(<FavoriteIcon/>);
+            setLikeIcon(<FavoriteIcon className="post-icon"/>);
         }else {
-            setLikeIcon(<FavoriteBorderIcon/>);
+            setLikeIcon(<FavoriteBorderIcon className="post-icon"/>);
         }
         if (post.post.reply_to) {
             getReply();
@@ -87,7 +87,7 @@ function Post(post) {
                                 <button className='button' onClick={() => navigate({
                                     pathname: '/Post',
                                     search: `?${createSearchParams({post_id: post.post.post_id})}`
-                                })}><ChatBubbleOutlineIcon/></button>
+                                })}><ChatBubbleOutlineIcon className="post-icon"/></button>
                                 <p>{post.post.reply_count}</p>
                             </div>
                             <div className="like-icon-button-container">

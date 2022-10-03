@@ -2,6 +2,16 @@
   text-align: center;
 }
 
+.dark{
+  background-color: #282c34;
+  color: white;
+}
+
+.dark .App{
+  background-color: #282c34;
+  color: white;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -38,11 +48,15 @@
 }
 
 .navbar-offset{
-  margin-top: 150px;
+  background-color: transparent;
+  height: 120px;
+  z-index: -1;
 }
 
 @media(min-width: 880px) {
   .navbar-offset{
-    margin-top: 75px;
+    z-index: -1;
+    height: 55px;
+    background-color: transparent;
   }
 }
