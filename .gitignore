@@ -20,6 +20,7 @@
 
 src/Server/.env
 src/Server/uploads/*
+!src/Server/uploads/profile_img_default.png
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

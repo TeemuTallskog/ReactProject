@@ -1,0 +1,36 @@
+.Crop-Container {
+    margin: 25px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.Crop-Controls{
+
+}
+
+.Crop-View{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin: 25px;
+}
+
+.Crop-Zoom{
+    display: flex;
+    flex-direction: column;
+}
+
+.Zoom-Button{
+    margin: 10px;
+}
+
+.Crop-Preview{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.Crop-Preview > * {
+    margin: 10px
+}

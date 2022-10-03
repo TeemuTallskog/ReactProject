@@ -26,7 +26,7 @@ function AutocompleteUserSearch(){
                 setTimeout(function(){
                     setLoading(false);
                 }, 500)
-            })();
+            })().catch((error) => setLoading(false));
         }
     }
 

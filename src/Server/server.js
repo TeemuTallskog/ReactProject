@@ -221,7 +221,7 @@ app.get("/replies", urlencodedParser, (req, res) => {
 });
 
 app.get("/users", urlencodedParser, (req, res) =>{
-    let sql = "SELECT u.username, u.user_id, u.profile_img, FROM user u WHERE u.username LIKE ?";
+    let sql = "SELECT u.username, u.user_id, u.profile_img FROM user u WHERE u.username LIKE ?";
     (async() => {
         req.query.username += "%";
         const response = await query(sql, [req.query.username]);
@@ -230,7 +230,10 @@ app.get("/users", urlencodedParser, (req, res) =>{
         }else{
             res.status(500).json({error: "internal server error"});
         }
-    })();
+    })().catch((err) => {
+        console.log(err);
+        res.status(500).json({error: "internal server error"});
+    });
 });
 
 app.post("/like", urlencodedParser, (req, res) => {
@@ -326,9 +329,7 @@ app.get("/myFollows", urlencodedParser, (req, res)=>{
 app.post("/upload/profile_img", upload.array(), (req, res) =>{
     const user = verifyJWT(req,res);
     if(!user) return;
-    console.log(req.body);
     if(!req.body.image) return;
-    console.log("here");
     try {
         (async () => {
             const filename = uuidv4() + ".png";
@@ -339,7 +340,7 @@ app.post("/upload/profile_img", upload.array(), (req, res) =>{
                     throw err;
                 }
             });
-            let imageUrl = "http://localhost:8080/images?url=" + filename;
+            let imageUrl = 'http://localhost:' + port + '/images?url=' + filename;
             let sql = "UPDATE user SET profile_img = ? WHERE user.user_id = ?";
             const response = await query(sql, [imageUrl, user.user_id]);
             res.status(202).json({message: "success"});
@@ -352,12 +353,26 @@ app.post("/upload/profile_img", upload.array(), (req, res) =>{
 
 app.get("/images", urlencodedParser, (req, res) =>{
     let filename = req.query.url;
-    try{
-        res.sendFile(__dirname + "/uploads/" + filename);
-    }catch(e){
-        console.log(e);
-        res.status(404).json({error: "not found"});
-    }
+        res.sendFile(__dirname + "/uploads/" + filename, function (err){
+            if(err){
+                res.sendFile(__dirname + "/uploads/profile_img_default.png", function (err){
+                    if(err){
+                        res.status(404).json({error: "not found"});
+                    }
+                });
+            }
+        });
+})
+
+app.post("/update/bio", urlencodedParser, (req, res) =>{
+    const user = verifyJWT(req, res);
+    (async()=>{
+        let sql = "UPDATE user SET bio = ? WHERE user_id = ?";
+        const response = query(sql,[req.body.content, user.user_id]);
+        if(response){
+            res.status(202).json({message: "success"});
+        }else throw Error;
+    })().catch((e) => res.status(500).json({error: "internal server error"}));
 })
 
 app.listen(port, () => {

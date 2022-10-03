@@ -9,7 +9,6 @@ import PostPage from "./components/PostPage";
 import MyAccount from "./components/MyAccount";
 import ProfileImageCrop from "./components/ProfileImageCrop";
 
-
 function App() {
   return (
       <div className="App">
