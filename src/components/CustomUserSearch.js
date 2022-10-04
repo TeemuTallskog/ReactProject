@@ -25,6 +25,7 @@ function CustomUserSearch(){
 
     const onChange = (e) => {
         setSearch({...search, [e.target.name]: e.target.value});
+        setIsOpen(true);
         if(!loading) {
             (async () => {
                 setLoading(true);

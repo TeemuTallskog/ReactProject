@@ -1,5 +1,6 @@
 .dark .card{
     background-color: var(--dark-component-background);
+    border-color: var(--dark-component-border);
 }
 
 .card-body{
@@ -10,6 +11,7 @@
 }
 .card-footer{
     background-color: transparent;
+    border-color: var(--dark-component-border);
 }
 
 .post-body{

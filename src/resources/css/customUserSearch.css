@@ -37,6 +37,10 @@
     border-bottom: solid rgba(0,0,0,0.175) 1px;
 }
 
+.dark .user-card-container:before{
+    border-bottom: solid var(--dark-component-border) 1px;
+}
+
 .user-card-container:hover{
     transition-duration: 500ms;
     background-color: lightgray;
