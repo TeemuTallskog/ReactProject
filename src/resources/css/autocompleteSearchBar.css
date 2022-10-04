@@ -4,7 +4,7 @@
 }
 
 .dark .Autocomplete-container{
-    background-color: rgb(73,81,95);
+    background-color: var(--dark-component-background);
 }
 
 .dark .MuiAutocomplete-input{

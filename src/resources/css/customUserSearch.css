@@ -3,7 +3,7 @@
     border-radius: 5px;
 }
 .dark .search-field{
-    background-color: rgb(73,81,95);
+    background-color: var(--dark-component-background);
     border: none;
 }
 
@@ -59,8 +59,8 @@
 
 .following{
     background-color: white;
-    border: #282c34 solid 1px;
-    color: #282c34;
+    border: var(--dark-component-border) solid 1px;
+    color: var(--dark-backgroud);
 }
 .following:hover{
     background-color: red !important;
@@ -92,8 +92,8 @@
 }
 
 .dark .dropdown-options-container{
-    background-color: rgb(73,81,95);
-    border: solid rgb(30,34,42) 1px;
+    background-color: var(--dark-component-background);
+    border: solid var(--dark-component-border) 1px;
 }
 
 .hide-dropdown{

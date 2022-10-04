@@ -9,7 +9,7 @@
 }
 
 .dark .navbar-container{
-    background-color: rgba(40,44,52,0.9);
+    background-color: var(--dark-backgroud);
 }
 
 .navbar-interactions-container{
