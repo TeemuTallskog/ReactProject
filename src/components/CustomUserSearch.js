@@ -16,7 +16,9 @@ const axios = require('axios');
 function CustomUserSearch(){
     const [options, setOptions] = React.useState([]);
     const [loading, setLoading] = useState(false);
-    const [search, setSearch] = useState({});
+    const [search, setSearch] = useState({
+        input: ''
+    });
     const textAreaRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
 
