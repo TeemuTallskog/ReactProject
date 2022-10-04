@@ -83,7 +83,7 @@ app.post('/login', urlencodedParser, (req, res) => {
                             password: response[0].password
                         }
                         const accessToken = jwt.sign({user:user}, process.env.TOKEN_KEY, {expiresIn: "1h"});
-                        res.status(202).json({accessToken: accessToken, username: response[0].username, email: response[0].email});
+                        res.status(202).json({accessToken: accessToken, username: response[0].username, user_id: response[0].user_id});
                     }else{
                         res.status(401).json({
                             message: 'Incorrect login credentials'
@@ -125,7 +125,7 @@ app.post("/signup", urlencodedParser, (req, res) => {
                         password: hashedPass
                     }
                     const accessToken = jwt.sign({user: user}, process.env.TOKEN_KEY, {expiresIn: '1h'});
-                    res.status(202).json({accessToken: accessToken, username: req.body.username});
+                    res.status(202).json({accessToken: accessToken, username: req.body.username, user_id: response.insertId});
                 }else {
 
                 }
@@ -221,10 +221,18 @@ app.get("/replies", urlencodedParser, (req, res) => {
 });
 
 app.get("/users", urlencodedParser, (req, res) =>{
-    let sql = "SELECT u.username, u.user_id, u.profile_img FROM user u WHERE u.username LIKE ?";
+    let user = null;
+    if(req.headers.authorization){
+        user = verifyJWT(req, res);
+        if(!user) return;
+    }
+    req.query.username += "%";
+    let sql = user ? "SELECT u.username, u.user_id, u.profile_img," +
+        "(SELECT COUNT(*) FROM follow f WHERE f.user_id = ? AND f.following_user_id = u.user_id)>0 AS user_follow_status " +
+        "FROM user u WHERE u.username LIKE ?" : "SELECT u.username, u.user_id, u.profile_img FROM user u WHERE u.username LIKE ?";
+    let params = user ? [user.user_id, req.query.username] : [req.query.username];
     (async() => {
-        req.query.username += "%";
-        const response = await query(sql, [req.query.username]);
+        const response = await query(sql, params);
         if(response){
             res.status(202).json({users: response});
         }else{
@@ -366,6 +374,7 @@ app.get("/images", urlencodedParser, (req, res) =>{
 
 app.post("/update/bio", urlencodedParser, (req, res) =>{
     const user = verifyJWT(req, res);
+    if(!user) return;
     (async()=>{
         let sql = "UPDATE user SET bio = ? WHERE user_id = ?";
         const response = query(sql,[req.body.content, user.user_id]);
@@ -373,6 +382,27 @@ app.post("/update/bio", urlencodedParser, (req, res) =>{
             res.status(202).json({message: "success"});
         }else throw Error;
     })().catch((e) => res.status(500).json({error: "internal server error"}));
+})
+
+app.post("/follow", urlencodedParser, (req, res) => {
+    const user = verifyJWT(req, res);
+    if(!user) return;
+    let sql = "SELECT COUNT(*) > 0 as foundCount FROM follow WHERE user_id = ? AND following_user_id = ?";
+    (async() =>{
+        const count = await query(sql, [user.user_id, req.body.user_id]);
+        if(!count) {
+            res.status(500).json({error: "internal server error"});
+            return;
+        };
+        if(count[0].foundCount == req.body.follow) {
+            res.status(202).json({user_follow_status: req.body.follow});
+            return;
+        }
+        sql = req.body.follow ? "INSERT INTO follow (user_id, following_user_id) VALUES (?, ?)" : "DELETE FROM follow WHERE user_id = ? AND following_user_id = ?";
+        const resp = await query(sql, [user.user_id, req.body.user_id]);
+        if(!resp) return;
+        res.status(202).json({user_follow_status: req.body.follow});
+    })().catch((e) =>{console.log(e)});
 })
 
 app.listen(port, () => {

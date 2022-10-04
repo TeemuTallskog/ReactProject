@@ -5,6 +5,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import '../resources/css/autocompleteSearchBar.css';
 import * as React from 'react';
+import UserCard from "./UserCard";
 const axios = require('axios');
 
 
@@ -36,6 +37,7 @@ function AutocompleteUserSearch(){
             setOptions([]);
         }
     }, [open]);
+
 
     return (
         <Autocomplete className="Autocomplete-container" filterOptions={(options) => options}

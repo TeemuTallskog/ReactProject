@@ -47,6 +47,7 @@ function LogInForm() {
                     console.log(data);
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("username", data.username);
+                    localStorage.setItem("user-id", data.user_id);
                     navigate('/');
                     window.location.reload(false);
                 })

@@ -7,6 +7,7 @@ import '../resources/css/navigationBar.css';
 import {Form, FormCheck} from 'react-bootstrap';
 import {useEffect, useState} from "react";
 import NightsStayIcon from '@mui/icons-material/NightsStay';
+import CustomUserSearch from "./CustomUserSearch";
 
 
 function NavigationBar() {
@@ -26,6 +27,7 @@ function NavigationBar() {
     const logout = () => {
         localStorage.setItem("accessToken", "");
         localStorage.setItem("username", "");
+        localStorage.setItem("user-id", "");
         window.location.reload(false);
     }
 
@@ -59,7 +61,7 @@ function NavigationBar() {
 
                         </div>
                         <div>
-                            <AutocompleteUserSearch/>
+                            <CustomUserSearch/>
                         </div>
                         <div style={{display: 'flex', justifyContent: 'end'}}>
                             {displayLogin}
