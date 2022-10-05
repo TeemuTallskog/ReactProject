@@ -57,9 +57,6 @@ function NavigationBar() {
                             <NavLink as={Link} to="/">Home</NavLink>
                             {displayMyAccount}
                         </div>
-                        <div style={{display: 'flex'}}>
-
-                        </div>
                         <div>
                             <CustomUserSearch/>
                         </div>

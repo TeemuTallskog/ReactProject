@@ -81,6 +81,7 @@ function SignUpForm() {
                 <Form.Group className="mb-3" md="5" controlId="email" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Email address</Form.Label>
                     <Form.Control
+                        className="form-input"
                         type="email"
                         placeholder="Enter email"
                         required
@@ -96,6 +97,7 @@ function SignUpForm() {
                 <Form.Group className="mb-3" md="5" controlId="username" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Email address</Form.Label>
                     <Form.Control
+                        className="form-input"
                         type="text"
                         placeholder="Enter username"
                         required
@@ -111,6 +113,7 @@ function SignUpForm() {
                 <Form.Group className="mb-3" md="5" controlId="password" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Password</Form.Label>
                     <Form.Control
+                        className="form-input"
                         type="password"
                         placeholder="Password"
                         required
@@ -126,6 +129,7 @@ function SignUpForm() {
                 <Form.Group className="mb-3" md="5" controlId="confirmPassword" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Confirm password</Form.Label>
                     <Form.Control
+                        className="form-input"
                         type = "password"
                         required
                         placeholder= "password"

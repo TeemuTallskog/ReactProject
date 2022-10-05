@@ -14,9 +14,16 @@
 
 .navbar-interactions-container{
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
     flex-wrap: wrap;
+    width: 75%;
+}
+
+@media (max-width: 1200px) {
+    .navbar-interactions-container{
+        width: 90%;
+    }
 }
 
 .me-auto{
@@ -34,4 +41,22 @@
 .night-mode-switch{
     position: absolute;
     right: 30px;
+}
+
+.nav-link{
+    border-bottom: var(--bs-border-color-translucent) solid 1px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.dark .nav-link{
+    border-bottom: var(--dark-component-border) solid 1px;
+}
+
+.nav-link:hover{
+    backdrop-filter: brightness(75%);
+}
+
+.dark .nav-link:hover{
+    backdrop-filter: brightness(150%);
 }
