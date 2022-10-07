@@ -1,25 +1,22 @@
 import {useEffect, useState} from "react";
 import Post from "./Post";
+import axios from "axios";
 
-function MyPosts() {
+function Posts(p) {
     const [posts, setPosts] = useState([]);
 
     const fetchPosts = function (){
         (async() =>{
-            const response = await fetch('http://localhost:8080/myPosts', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem("accessToken")
+
+            await axios.get('http://localhost:8080/user/posts', {
+                params: {username: p.item},
+                headers: {'Authorization': localStorage.getItem("accessToken")}
+                }).then(response=>{
+                if(response.status === 202){
+                    console.log(response.data.posts)
+                    setPosts(response.data.posts);
                 }
             })
-            if(response.status === 202){
-                response.json().then((data) =>{
-                    console.log(data.posts);
-                    setPosts(data.posts);
-                })
-            }
         })().catch(err => console.log(err));
     }
 
@@ -37,4 +34,4 @@ function MyPosts() {
         </div>
     )
 }
-export default MyPosts;
+export default Posts;

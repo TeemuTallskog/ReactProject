@@ -247,34 +247,39 @@ app.post("/like", urlencodedParser, (req, res) => {
     })().catch((e) =>{console.log(e)});
 })
 
-app.get("/myInfo", urlencodedParser, (req, res) => {
+app.get("/account", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
 
-    let follows = "SELECT COUNT(*) as follows FROM follow WHERE user_id = ?";
-    let followers = "SELECT COUNT(*) as followers FROM follow WHERE following_user_id = ?";
-    let posts = "SELECT COUNT(*) as posts FROM post WHERE user_id = ?";
+    let follows = "SELECT COUNT(*) as follows FROM follow WHERE user_id IN(SELECT user_id FROM user WHERE username = ?)";
+    let followers = "SELECT COUNT(*) as followers FROM follow WHERE following_user_id IN(SELECT user_id FROM user WHERE username = ?)";
+    let posts = "SELECT COUNT(*) as posts FROM post WHERE user_id IN(SELECT user_id FROM user WHERE username = ?)";
+    let followStatus = "SELECT COUNT(*) as following FROM follow WHERE user_id = ? AND following_user_id IN(SELECT user_id FROM user WHERE username = ?)";
+    let myUser = user.username === req.query.username;
 
     (async() => {
-        const response1 = await query(follows, [user.user_id]);
-        const response2 = await query(followers, [user.user_id]);
-        const response3 = await query(posts, [user.user_id]);
-        if(response1 && response2 && response3){
-            res.status(202).json({follows: response1[0].follows, followers: response2[0].followers, posts: response3[0].posts});
+        const response1 = await query(follows, [req.query.username]);
+        const response2 = await query(followers, [req.query.username]);
+        const response3 = await query(posts, [req.query.username]);
+        const response4 = await query(followStatus, [user.user_id, req.query.username]);
+
+
+        if(response1 && response2 && response3 && response4){
+            let following = response4[0].following > 0;
+            res.status(202).json({follows: response1[0].follows, followers: response2[0].followers, posts: response3[0].posts, myUser: myUser, isFollowing: following});
         }else{
             res.status(500).json({error: "internal server error"});
         }
     })().catch((e) =>{console.log(e)});
 })
 
-app.get("/myPosts", urlencodedParser, (req, res)=>{
+app.get("/user/posts", urlencodedParser, (req, res)=>{
      const user = verifyJWT(req, res);
     if(!user) return;
-
-    let sql = "SELECT * FROM post WHERE user_id = ?";
+    let sql = "SELECT * FROM post WHERE user_id IN(SELECT user_id FROM user WHERE username = ?)";
 
     (async() => {
-        const response = await query(sql, [user.user_id]);
+        const response = await query(sql, [req.query.username]);
 
         if(response){
             res.status(202).json({posts: response});
@@ -284,14 +289,14 @@ app.get("/myPosts", urlencodedParser, (req, res)=>{
     })();
 })
 
-app.get("/myFollowers", urlencodedParser, (req, res)=>{
+app.get("/user/followers", urlencodedParser, (req, res)=>{
      const user = verifyJWT(req, res);
     if(!user) return;
 
-    let sql = "SELECT follow.user_id, user.username FROM follow INNER JOIN user ON user.user_id = follow.user_id WHERE follow.following_user_id = 1";
+    let sql = "SELECT follow.user_id, user.username FROM follow INNER JOIN user ON user.user_id = follow.user_id WHERE follow.following_user_id IN(SELECT user_id FROM user WHERE username = ?)";
 
     (async() => {
-        const response = await query(sql, [user.user_id]);
+        const response = await query(sql, [req.query.username]);
 
         if(response){
             res.status(202).json({followers: response});
@@ -301,17 +306,31 @@ app.get("/myFollowers", urlencodedParser, (req, res)=>{
     })();
 })
 
-app.get("/myFollows", urlencodedParser, (req, res)=>{
+app.get("/user/follows", urlencodedParser, (req, res)=>{
      const user = verifyJWT(req, res);
     if(!user) return;
 
-   let sql = "SELECT follow.following_user_id AS userId, user.username FROM follow INNER JOIN user ON user.user_id = follow.following_user_id WHERE follow.user_id = ?";
+   let sql = "SELECT follow.following_user_id AS userId, user.username FROM follow INNER JOIN user ON user.user_id = follow.following_user_id WHERE follow.user_id IN(SELECT user_id FROM user WHERE username = ?)";
 
     (async() => {
-        const response = await query(sql, [user.user_id]);
+        const response = await query(sql, [req.query.username]);
 
         if(response){
             res.status(202).json({follows: response});
+        }else{
+            res.status(500).json({error: "internal server error"});
+        }
+    })();
+})
+
+app.post("/follow", urlencodedParser, (req,res)=>{
+    const user = verifyJWT(req, res);
+    if(!user) return;
+    let sql = req.body.following ? "INSERT INTO follow (user_id, following_user_id) VALUES (?, (SELECT user_id FROM user WHERE username = ?))" : "DELETE FROM follow WHERE user_id = ? AND following_user_id IN(SELECT user_id FROM user WHERE username = ?)";
+    (async() => {
+        const response = await query(sql, [user.user_id, req.body.username]);
+        if(response){
+            res.sendStatus(202);
         }else{
             res.status(500).json({error: "internal server error"});
         }

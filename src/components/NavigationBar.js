@@ -3,11 +3,12 @@ import {Outlet, Link} from "react-router-dom";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import AutocompleteUserSearch from "./AutocompleteUserSearch";
+import {useNavigate, createSearchParams} from "react-router-dom";
 
 
 function NavigationBar(){
 
-
+    const navigate = useNavigate();
 
     const logout = () => {
         localStorage.setItem("accessToken", "");
@@ -26,7 +27,8 @@ function NavigationBar(){
             <Button variant="link" onClick={logout}>Logout</Button>
         </>
 
-        displayMyAccount = <NavLink as={Link} to="/MyAccount">My Account</NavLink>
+        displayMyAccount = <NavLink onClick={() => navigate({pathname: 'Account', search: `?${createSearchParams({username: localStorage.getItem("username")})}`})}>My Account</NavLink>
+        
     }
 
 
