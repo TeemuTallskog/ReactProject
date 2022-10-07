@@ -89,7 +89,7 @@ function Account() {
     
     const follow = function(following){
         (async() =>{
-            await axios.post('http://localhost:8080/follow',{following: following, username: searchParams.get("username")} ,{
+            await axios.post('http://localhost:8080/user/follow',{following: following, username: searchParams.get("username")} ,{
                 headers: {'Authorization': localStorage.getItem("accessToken")}}).then(resp=>{reRender(true)});
         })().catch((e)=> console.log(e));
     }

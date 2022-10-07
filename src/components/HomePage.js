@@ -35,7 +35,7 @@ function HomePage() {
     })
 
     return (
-        <div style={{margin: 'auto', width: '50%', padding:'10px' }}>
+        <div style={{margin: 'auto', maxWidth: '880px', padding:'10px' }}>
             <PostForm/>
             <div>{generatePosts}</div>
         </div>

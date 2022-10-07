@@ -7,6 +7,10 @@ const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+const multer = require('multer');
+const upload = multer();
 
 const urlencodedParser = bodyParser.urlencoded({extended: false});
 app.use(bodyParser.urlencoded({extended: false}));
@@ -31,10 +35,11 @@ con.connect(function(err) {
 const query = util.promisify(con.query).bind(con);
 
 //Verifies JWT token and returns a user object if valid or null
-const verifyJWT = function (req, res){
+const verifyJWT = function (req, res, next){
     if(req.headers.authorization){
         try{
             const verified = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY);
+            if(next) next();
             return verified.user;
         }catch (e) {
             res.status(401).json({
@@ -78,7 +83,7 @@ app.post('/login', urlencodedParser, (req, res) => {
                             password: response[0].password
                         }
                         const accessToken = jwt.sign({user:user}, process.env.TOKEN_KEY, {expiresIn: "1h"});
-                        res.status(202).json({accessToken: accessToken, username: response[0].username, email: response[0].email});
+                        res.status(202).json({accessToken: accessToken, username: response[0].username, user_id: response[0].user_id});
                     }else{
                         res.status(401).json({
                             message: 'Incorrect login credentials'
@@ -120,7 +125,7 @@ app.post("/signup", urlencodedParser, (req, res) => {
                         password: hashedPass
                     }
                     const accessToken = jwt.sign({user: user}, process.env.TOKEN_KEY, {expiresIn: '1h'});
-                    res.status(202).json({accessToken: accessToken, username: req.body.username});
+                    res.status(202).json({accessToken: accessToken, username: req.body.username, user_id: response.insertId});
                 }else {
 
                 }
@@ -139,7 +144,7 @@ app.get("/post", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
     (async() => {
-        let sql = "SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
+        let sql = "SELECT p.*, u.username, u.profile_img, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
             "(SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = ?)>0 AS user_like_status, " +
             "(SELECT COUNT(*) FROM post WHERE post.reply_to = p.post_id) AS reply_count FROM post p " +
             "INNER JOIN user u ON p.user_id = u.user_id " +
@@ -177,12 +182,12 @@ app.post("/post", urlencodedParser, (req, res) => {
 app.get("/posts" ,urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
-    let sql = "SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes," +
+    let sql = "SELECT p.*, u.username, u.profile_img, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes," +
         " (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = ?)>0 AS user_like_status," +
         " (SELECT COUNT(*) FROM post WHERE post.reply_to = p.post_id) AS reply_count FROM post p" +
         " INNER JOIN follow f ON (p.user_id = f.following_user_id AND f.user_id = ?)" +
         " INNER JOIN user u ON p.user_id = u.user_id" +
-        " UNION ALL SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
+        " UNION ALL SELECT p.*, u.username, u.profile_img, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
         "(SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = u.user_id)>0 AS user_like_status," +
         "(SELECT COUNT(*) FROM post WHERE post.reply_to = p.post_id) AS reply_count FROM post p" +
         " INNER JOIN user u ON (p.user_id = u.user_id AND p.user_id = ?) ORDER BY created DESC";
@@ -200,7 +205,7 @@ app.get("/posts" ,urlencodedParser, (req, res) => {
 app.get("/replies", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
-    let sql = "SELECT p.*, u.username, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
+    let sql = "SELECT p.*, u.username, u.profile_img, (SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id) AS total_likes, " +
         "(SELECT COUNT(*) FROM likes WHERE likes.post_id = p.post_id AND likes.user_id = ?)>0 AS user_like_status, " +
         "(SELECT COUNT(*) FROM post WHERE post.reply_to = p.post_id) AS reply_count FROM post p " +
         "INNER JOIN user u ON p.user_id = u.user_id " +
@@ -216,16 +221,27 @@ app.get("/replies", urlencodedParser, (req, res) => {
 });
 
 app.get("/users", urlencodedParser, (req, res) =>{
-    let sql = "SELECT u.username, u.user_id FROM user u WHERE u.username LIKE ?";
+    let user = null;
+    if(req.headers.authorization){
+        user = verifyJWT(req, res);
+        if(!user) return;
+    }
+    req.query.username += "%";
+    let sql = user ? "SELECT u.username, u.user_id, u.profile_img," +
+        "(SELECT COUNT(*) FROM follow f WHERE f.user_id = ? AND f.following_user_id = u.user_id)>0 AS user_follow_status " +
+        "FROM user u WHERE u.username LIKE ?" : "SELECT u.username, u.user_id, u.profile_img FROM user u WHERE u.username LIKE ?";
+    let params = user ? [user.user_id, req.query.username] : [req.query.username];
     (async() => {
-        req.query.username += "%";
-        const response = await query(sql, [req.query.username]);
+        const response = await query(sql, params);
         if(response){
             res.status(202).json({users: response});
         }else{
             res.status(500).json({error: "internal server error"});
         }
-    })();
+    })().catch((err) => {
+        console.log(err);
+        res.status(500).json({error: "internal server error"});
+    });
 });
 
 app.post("/like", urlencodedParser, (req, res) => {
@@ -323,7 +339,78 @@ app.get("/user/follows", urlencodedParser, (req, res)=>{
     })();
 })
 
-app.post("/follow", urlencodedParser, (req,res)=>{
+app.post("/upload/profile_img", upload.array(), (req, res) =>{
+    const user = verifyJWT(req,res);
+    if(!user) return;
+    if(!req.body.image) return;
+    try {
+        (async () => {
+            const filename = uuidv4() + ".png";
+            const base64data = req.body.image.split(";base64,").pop();
+            fs.writeFile("uploads/" + filename, base64data, 'base64', function(err) {
+                if(err){
+                    console.log(err);
+                    throw err;
+                }
+            });
+            let imageUrl = 'http://localhost:' + port + '/images?url=' + filename;
+            let sql = "UPDATE user SET profile_img = ? WHERE user.user_id = ?";
+            const response = await query(sql, [imageUrl, user.user_id]);
+            res.status(202).json({message: "success"});
+        })()
+    }catch(e){
+        console.log(e);
+        res.status(500).json({error: 'internal server error'});
+    }
+})
+
+app.get("/images", urlencodedParser, (req, res) =>{
+    let filename = req.query.url;
+        res.sendFile(__dirname + "/uploads/" + filename, function (err){
+            if(err){
+                res.sendFile(__dirname + "/uploads/profile_img_default.png", function (err){
+                    if(err){
+                        res.status(404).json({error: "not found"});
+                    }
+                });
+            }
+        });
+})
+
+app.post("/update/bio", urlencodedParser, (req, res) =>{
+    const user = verifyJWT(req, res);
+    if(!user) return;
+    (async()=>{
+        let sql = "UPDATE user SET bio = ? WHERE user_id = ?";
+        const response = query(sql,[req.body.content, user.user_id]);
+        if(response){
+            res.status(202).json({message: "success"});
+        }else throw Error;
+    })().catch((e) => res.status(500).json({error: "internal server error"}));
+})
+
+app.post("/follow", urlencodedParser, (req, res) => {
+    const user = verifyJWT(req, res);
+    if(!user) return;
+    let sql = "SELECT COUNT(*) > 0 as foundCount FROM follow WHERE user_id = ? AND following_user_id = ?";
+    (async() =>{
+        const count = await query(sql, [user.user_id, req.body.user_id]);
+        if(!count) {
+            res.status(500).json({error: "internal server error"});
+            return;
+        };
+        if(count[0].foundCount == req.body.follow) {
+            res.status(202).json({user_follow_status: req.body.follow});
+            return;
+        }
+        sql = req.body.follow ? "INSERT INTO follow (user_id, following_user_id) VALUES (?, ?)" : "DELETE FROM follow WHERE user_id = ? AND following_user_id = ?";
+        const resp = await query(sql, [user.user_id, req.body.user_id]);
+        if(!resp) return;
+        res.status(202).json({user_follow_status: req.body.follow});
+    })().catch((e) =>{console.log(e)});
+})
+
+app.post("/user/follow", urlencodedParser, (req,res)=>{
     const user = verifyJWT(req, res);
     if(!user) return;
     let sql = req.body.following ? "INSERT INTO follow (user_id, following_user_id) VALUES (?, (SELECT user_id FROM user WHERE username = ?))" : "DELETE FROM follow WHERE user_id = ? AND following_user_id IN(SELECT user_id FROM user WHERE username = ?)";

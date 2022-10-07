@@ -1,0 +1,4 @@
+.dark .form-input{
+    background-color: var(--dark-component-background);
+    color: white;
+}

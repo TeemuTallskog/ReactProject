@@ -1,0 +1,5 @@
+.dark .post-text-area{
+    color: white;
+    background-color: var(--dark-component-background);
+    border-color: var(--dark-component-border);
+}

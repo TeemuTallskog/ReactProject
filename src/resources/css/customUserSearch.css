@@ -1,0 +1,109 @@
+.search-field{
+    width: 350px;
+    border-radius: 5px;
+}
+.dark .search-field{
+    background-color: var(--dark-component-background);
+    border: none;
+}
+
+.MuiInputBase-input{
+    height: 35px !important;
+    padding: 0px 12px 0 12px !important;
+}
+.dark .MuiInputBase-input{
+    color:white;
+}
+
+.user-card-container{
+    /*border-bottom: black solid 1px;
+
+     */
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    max-height: 70px;
+    position: relative;
+}
+
+.user-card-container:before{
+    content : "";
+    position: absolute;
+    margin: auto;
+    left: 44px;
+    bottom  : 0;
+    height  : 1px;
+    width   : 75%;
+    border-bottom: solid rgba(0,0,0,0.175) 1px;
+}
+
+.dark .user-card-container:before{
+    border-bottom: solid var(--dark-component-border) 1px;
+}
+
+.user-card-container:hover{
+    transition-duration: 500ms;
+    background-color: lightgray;
+}
+
+.dark .user-card-container:hover{
+    background-color: rgb(53,61,75);
+}
+
+.username-h5{
+    margin-bottom: 0 !important;
+}
+
+.follow-button{
+    right: 25px;
+    position: absolute;
+    background-color: #282c34;
+    border: none;
+}
+
+.following{
+    background-color: white;
+    border: var(--dark-component-border) solid 1px;
+    color: var(--dark-backgroud);
+}
+.following:hover{
+    background-color: red !important;
+    border: red solid 1px !important;
+}
+
+.dark .follow-button{
+    border: none;
+    background-color: white;
+    color: black;
+}
+
+.dark .following{
+    background-color: transparent;
+    border: white solid 1px;
+    color: white;
+}
+
+.dropdown-options-container{
+    position:absolute;
+    top: 50px;
+    width: 350px;
+    height: 500px;
+    border: solid rgba(0,0,0,0.175) 1px;
+    border-radius: 5px;
+    background-color: white;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.dark .dropdown-options-container{
+    background-color: var(--dark-component-background);
+    border: solid var(--dark-component-border) 1px;
+}
+
+.hide-dropdown{
+    display: none;
+}
+
+.linear-progress-bar{
+    height: 8px !important;
+}

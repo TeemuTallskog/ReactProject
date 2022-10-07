@@ -1,0 +1,25 @@
+.Bio-Form{
+    display: flex;
+}
+
+.Bio-Form-Container{
+    margin: 25px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.Bio-Form-Container > * {
+    margin: 10px;
+}
+
+.Bio-Form-Input{
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+
+}

@@ -1,0 +1,92 @@
+.dark .card{
+    background-color: var(--dark-component-background);
+    border-color: var(--dark-component-border);
+}
+
+.card-body{
+    position: relative;
+}
+.card-header{
+    background-color: transparent;
+}
+.card-footer{
+    background-color: transparent;
+    border-color: var(--dark-component-border);
+}
+
+.post-body{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    vertical-align: top;
+    overflow: hidden;
+}
+.post-profile-picture{
+    max-height: 48px !important;
+    max-width: 48px !important;
+    margin: 20px 10px 20px 20px;
+    border: var(--bs-border-color-translucent) solid 1px;
+}
+
+.dark .post-profile-picture{
+    border: var(--dark-component-border) solid 1px
+}
+
+.post-body-content{
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    margin: 20px 20px 20px 10px;
+}
+
+.reply-icon-button-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-right: 10px;
+}
+.reply-icon-button-container>button{
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+}
+
+.like-icon-button-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-left: 10px;
+}
+
+.like-icon-button-container>button{
+     margin-right: 0px !important;
+     margin-left: 0px !important;
+ }
+
+.like-icon-button-container>p{
+    margin-bottom: 0px !important;
+}
+.reply-icon-button-container>p{
+    margin-bottom: 0px !important;
+}
+
+.post-interaction-buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0px;
+}
+
+.card-text{
+    max-width: 400px;
+    text-align: left;
+    flex-wrap: wrap;
+}
+
+.dark .post-icon{
+    color: white;
+}

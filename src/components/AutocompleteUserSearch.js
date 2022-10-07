@@ -3,7 +3,9 @@ import {useState} from "react";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
+import '../resources/css/autocompleteSearchBar.css';
 import * as React from 'react';
+import UserCard from "./UserCard";
 const axios = require('axios');
 
 
@@ -26,7 +28,7 @@ function AutocompleteUserSearch(){
                 setTimeout(function(){
                     setLoading(false);
                 }, 500)
-            })();
+            })().catch((error) => setLoading(false));
         }
     }
 
@@ -36,8 +38,9 @@ function AutocompleteUserSearch(){
         }
     }, [open]);
 
+
     return (
-        <Autocomplete filterOptions={(options) => options}
+        <Autocomplete className="Autocomplete-container" filterOptions={(options) => options}
             id="userSearch"
             sx={{ width: 300 }}
             open={open}
@@ -62,8 +65,8 @@ function AutocompleteUserSearch(){
                         ...params.InputProps,
                         endAdornment: (
                             <React.Fragment>
-                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                <SearchIcon/>
+                                {loading ? <CircularProgress className="load-icon" color="inherit" size={20} /> : null}
+                                <SearchIcon className="search-icon"/>
                             </React.Fragment>
                         ),
                         style: {padding:'5px'}

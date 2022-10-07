@@ -1,13 +1,9 @@
-import Form from 'react-bootstrap/Form';
-import {useState} from 'react';
-import Col from 'react-bootstrap/Col'
+import React, {useState} from "react";
+import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import React from 'react';
-import {Row} from "react-bootstrap";
-import '../resources/css/postForm.css'
+import '../resources/css/updateBioFrom.css';
 
-function PostForm(props) {
-
+function UpdateBioForm(props){
     const [formData, setFormData] = useState({
         content: ''
     });
@@ -33,7 +29,7 @@ function PostForm(props) {
             return;
         }
         (async() =>{
-            const response = await fetch('http://localhost:8080/post', {
+            const response = await fetch('http://localhost:8080/update/bio', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -42,16 +38,23 @@ function PostForm(props) {
                 },
                 body: JSON.stringify({
                     content: formData.content,
-                    reply_to: props.replyTo
                 })
             })
             if(response.status === 202){
                 console.log("Success");
+                setFormData({
+                    content: ''
+                });
                 window.location.reload(false);
             }
             if(response.status === 401){
                 setErrors({
                     content: "You haven't logged in!"
+                });
+            }
+            if(response.status === 500 || response.status === 404){
+                setErrors({
+                    content: "Something went wrong :("
                 });
             }
         })().catch(err => console.log(err));
@@ -65,37 +68,30 @@ function PostForm(props) {
     }
 
     return(
-        <div style={{margin: '10px'}}>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3"  controlId="email" as={Col}>
-                    <Row>
-                        <Col xs={10}>
-                    <Form.Control
-                        className="post-text-area"
-                        type="textarea"
-                        rows={3}
-                        placeholder="What is happening?"
-                        required
-                        name="content"
-                        value={formData.content}
-                        onChange={onChange}
-                        isInvalid={!!errors.content}
-                    />
-                    <p style={{color: formData.content.length > 253 ? "#ff3333" : "", textAlign: 'right'}}>{count}/254</p>
-                    <Form.Control.Feedback type="invalid">
-                        {errors.content}
-                    </Form.Control.Feedback>
-                        </Col>
-                        <Col>
-                    <Button variant="primary" type="submit" style={{width: '100%'}}>
-                        {props.isReply ? "Reply" : "Post"}
-                    </Button>
-                        </Col>
-                    </Row>
+            <Form onSubmit={handleSubmit} className="Bio-Form">
+                <Form.Group className="Bio-Form-Container">
+                    <div className="Bio-Form-Input">
+                            <Form.Control
+                                type="textarea"
+                                placeholder={props.bio? props.bio : "Tell something about yourself..."}
+                                required
+                                name="content"
+                                value={formData.content}
+                                onChange={onChange}
+                                isInvalid={!!errors.content}
+                                style={{height: '100%'}}
+                            />
+                            <p style={{color: formData.content.length > 253 ? "#ff3333" : "", textAlign: 'right', height: '1px', marginBottom: '0'}}>{count}/254</p>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.content}
+                            </Form.Control.Feedback>
+                    </div>
+                            <Button variant="primary" type="submit">
+                                Update
+                            </Button>
                 </Form.Group>
             </Form>
-        </div>
     );
 }
 
-export default PostForm;
+export default UpdateBioForm

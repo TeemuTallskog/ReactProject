@@ -1,0 +1,82 @@
+:root{
+  /*
+  --dark-backgroud: #282c34;
+  --dark-component-background: rgb(73,81,95);
+  --dark-component-border: rgba(0, 0, 0, 0.175);
+
+   */
+  --dark-backgroud: rgb(33, 33, 33);
+  --dark-component-background: rgb(50, 50, 50);
+  --dark-component-border: rgba(255, 255, 255, 0.175);
+}
+
+html, body, #app, #app>div {
+  height: 100vh;
+}
+
+.App {
+  text-align: center;
+}
+
+body.dark{
+  background-color: var(--dark-backgroud);
+}
+
+.dark{
+  background-color: var(--dark-backgroud);
+  color: white;
+}
+
+.dark .App{
+  background-color: var(--dark-backgroud);
+  color: white;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: var(--dark-backgroud);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.navbar-offset{
+  background-color: transparent;
+  height: 120px;
+  z-index: -1;
+}
+
+@media(min-width: 880px) {
+  .navbar-offset{
+    z-index: -1;
+    height: 55px;
+    background-color: transparent;
+  }
+}

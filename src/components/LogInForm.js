@@ -4,6 +4,7 @@ import Col from 'react-bootstrap/Col'
 import Button from "react-bootstrap/Button";
 import React from 'react';
 import {useNavigate} from "react-router-dom";
+import '../resources/css/loginForm.css'
 
 function LogInForm() {
 
@@ -47,6 +48,7 @@ function LogInForm() {
                     console.log(data);
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("username", data.username);
+                    localStorage.setItem("user-id", data.user_id);
                     navigate('/');
                     window.location.reload(false);
                 })
@@ -75,6 +77,7 @@ function LogInForm() {
                 <Form.Group className="mb-3" md="5" controlId="email" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Email address</Form.Label>
                     <Form.Control
+                        className="form-input"
                         type="email"
                         placeholder="Enter email"
                         required
@@ -90,6 +93,7 @@ function LogInForm() {
                 <Form.Group className="mb-3" md="5" controlId="password" as={Col} style={{margin: "auto"}}>
                     <Form.Label>Password</Form.Label>
                     <Form.Control
+                        className="form-input"
                         type="password"
                         placeholder="Password"
                         required
