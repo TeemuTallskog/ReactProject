@@ -44,13 +44,9 @@
 }
 
 .nav-link{
-    border-bottom: var(--bs-border-color-translucent) solid 1px;
+    border-radius: 5px;
     margin-right: 5px;
     margin-left: 5px;
-}
-
-.dark .nav-link{
-    border-bottom: var(--dark-component-border) solid 1px;
 }
 
 .nav-link:hover{
@@ -59,4 +55,8 @@
 
 .dark .nav-link:hover{
     backdrop-filter: brightness(150%);
+}
+
+.post-profile-picture:hover{
+    cursor: pointer;
 }

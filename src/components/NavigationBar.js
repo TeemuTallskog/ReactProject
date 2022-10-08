@@ -9,12 +9,16 @@ import {useEffect, useState} from "react";
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import CustomUserSearch from "./CustomUserSearch";
 import {useNavigate, createSearchParams} from "react-router-dom";
+import HomeIcon from '@mui/icons-material/Home';
+import PersonIcon from '@mui/icons-material/Person';
+import profileImg from "../resources/images/profile_img_default.png";
+import axios from "axios";
 
 
 function NavigationBar() {
 
     const [darkMode, setDarkMode] = useState(localStorage.getItem("darkMode") ? true : false);
-
+    const [profilePicture, setProfilePicture] = useState(profileImg);
     const navigate = useNavigate();
     useEffect(() => {
         if (darkMode) {
@@ -33,18 +37,42 @@ function NavigationBar() {
         window.location.reload(false);
     }
 
+    const navigateToUser = (e) =>{
+        e.stopPropagation();
+        navigate({pathname: '/Account', search: `?${createSearchParams({username: localStorage.getItem("username")})}`})
+    }
+
+    const fetchProfilePicture = () =>{
+        (async() =>{
+            const response = await axios.get('http://localhost:8080/profile_img', {headers: {authorization: localStorage.getItem("accessToken")}});
+            if(response.data.profile_img) setProfilePicture(response.data.profile_img);
+        })();
+    }
+
+    useEffect(() =>{
+        fetchProfilePicture();
+    }, [])
+
     let displayLogin = <><NavLink as={Link} to="/LogInForm">LogIn</NavLink>
         <NavLink as={Link} to="/SignUpForm">SignUp</NavLink></>;
 
     let displayMyAccount = <></>
 
     if (localStorage.getItem("username")) {
+        console.log(profilePicture);
         displayLogin = <>
-            <Navbar.Text>Logged in as: {localStorage.getItem("username")}</Navbar.Text>
+            <img  onClick={navigateToUser} className="post-profile-picture navbar-img" style={{borderRadius: '50%', width: '38px', height: '38px', margin: '0 10px 0 0'}}
+                  src={profilePicture}
+                  onError={({currentTarget}) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src = profileImg;
+                  }}/>
+            <Navbar.Text>
+                {localStorage.getItem("username")}</Navbar.Text>
             <Button variant="link" onClick={logout}>Logout</Button>
         </>
 
-        displayMyAccount = <NavLink onClick={() => navigate({pathname: 'Account', search: `?${createSearchParams({username: localStorage.getItem("username")})}`})}>Profile</NavLink>
+        displayMyAccount = <NavLink onClick={() => navigate({pathname: 'Account', search: `?${createSearchParams({username: localStorage.getItem("username")})}`})}><PersonIcon/> Profile</NavLink>
         
     }
 
@@ -57,7 +85,7 @@ function NavigationBar() {
                 <Nav className="me-auto">
                     <div className="navbar-interactions-container">
                         <div style={{display: 'flex'}}>
-                            <NavLink as={Link} to="/">Home</NavLink>
+                            <NavLink as={Link} to="/"><HomeIcon/> Home</NavLink>
                             {displayMyAccount}
                         </div>
                         <div>

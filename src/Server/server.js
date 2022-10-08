@@ -433,6 +433,22 @@ app.post("/user/follow", urlencodedParser, (req,res)=>{
     })();
 })
 
+app.get("/profile_img", urlencodedParser, (req, res) =>{
+    const user = verifyJWT(req, res);
+    if(!user) return;
+    let sql = "SELECT u.profile_img FROM user u WHERE u.user_id = ?";
+    (async() => {
+        const response = await query(sql, [user.user_id]);
+        if(response){
+            res.status(202).json({
+                profile_img: response[0].profile_img
+            })
+        }else{
+            res.status(500).json({error: "internal server error"});
+        }
+    })();
+})
+
 app.listen(port, () => {
     console.log(`App listening on port http://localhost:${port}`)
 })
