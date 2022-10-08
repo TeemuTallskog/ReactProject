@@ -2,7 +2,9 @@
 const request = require('supertest');
 process.env = Object.assign(process.env, {
     TOKEN_KEY: 'testtoken',
-    DB_NAME: 'project_db_test'
+    DB_NAME: 'project_db_test',
+    DB_USERNAME: 'root',
+    DB_PASSWORD: 'root'
 })
 const server = require('../Server/server');
 const util = require("util");
