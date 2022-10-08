@@ -8,6 +8,17 @@ import axios from "axios";
 
 function Account() {
     
+    /**
+     * searchParams
+     * {int} posts - user's post count
+     * {int} follows - user's follow count
+     * {int} followers - user's follower count
+     * {string} activeButton - currently pressed button 
+     * {string} username
+     * {boolean} hasFollowButton - if false follw button disappears
+     * {boolean} isFollowing - tells the status of follow button
+     * {boolean} shouldRender - used for changing the follow button
+     */
     const [searchParams] = useSearchParams();
     const [posts, setPosts] = useState(0);
     const [follows, setFollows] = useState(0);
@@ -18,6 +29,10 @@ function Account() {
     const [isFollowing, setFollow] = useState(false)
     const [shouldRender, reRender] = useState(false)
 
+
+     /**
+     * gets the account info from database by the searchParam username and returns the account info.
+     */
     const fetchAccount = function (){
         (async() =>{
             await axios.get('http://localhost:8080/account', {
@@ -49,10 +64,16 @@ function Account() {
     }
 
 
+     /**
+     * changes wheather posts, followers or follows are shown
+     */
     const clickButton = (e) =>{
         setActiveButton(e.target.name)
     }
 
+     /**
+     * creates the posts, followers and follows
+     */
     let generateSelected =()=> {
         if(activeButton === "posts"){
             if(posts >0)
@@ -72,6 +93,9 @@ function Account() {
         }
     }
 
+     /**
+     * chooses the follow button status
+     */
     let followButton= () =>{
         if(hasFollowButton){
 
@@ -86,7 +110,9 @@ function Account() {
         }
     }
 
-    
+     /**
+     * follow or unfollow user and update it in the database
+     */
     const follow = function(following){
         (async() =>{
             await axios.post('http://localhost:8080/user/follow',{following: following, username: searchParams.get("username")} ,{
