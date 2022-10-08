@@ -22,6 +22,16 @@
     vertical-align: top;
     overflow: hidden;
 }
+
+.post-body:hover{
+    border-radius: 5px;
+    background-color: var(--component-hover-color);
+    cursor: pointer;
+}
+.dark .post-body:hover{
+    background-color: var(--dark-component-hover-color);
+}
+
 .post-profile-picture{
     max-height: 48px !important;
     max-width: 48px !important;
@@ -89,4 +99,8 @@
 
 .dark .post-icon{
     color: white;
+}
+
+.card-title:hover{
+    text-decoration: underline;
 }

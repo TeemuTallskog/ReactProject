@@ -85,7 +85,7 @@ function ProfileImageCrop(){
 
     const handleSubmit = async () =>{
         const data = new FormData();
-        data.append('image', previewCanvasRef.current.toDataURL("image/jpeg", 0.5));
+        data.append('image', previewCanvasRef.current.toDataURL("image/png", 0.5));
 
         const response = await fetch('http://localhost:8080/upload/profile_img',{
             method: 'POST',

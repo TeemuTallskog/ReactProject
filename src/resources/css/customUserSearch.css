@@ -44,6 +44,7 @@
 .user-card-container:hover{
     transition-duration: 500ms;
     background-color: lightgray;
+    cursor: pointer;
 }
 
 .dark .user-card-container:hover{
@@ -63,7 +64,7 @@
 
 .following{
     background-color: white;
-    border: var(--dark-component-border) solid 1px;
+    border: var(--bs-border-color-translucent) solid 1px;
     color: var(--dark-backgroud);
 }
 .following:hover{

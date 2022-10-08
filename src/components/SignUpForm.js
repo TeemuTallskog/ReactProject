@@ -95,7 +95,7 @@ function SignUpForm() {
                     </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" md="5" controlId="username" as={Col} style={{margin: "auto"}}>
-                    <Form.Label>Email address</Form.Label>
+                    <Form.Label>Username</Form.Label>
                     <Form.Control
                         className="form-input"
                         type="text"

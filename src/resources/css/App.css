@@ -8,6 +8,8 @@
   --dark-backgroud: rgb(33, 33, 33);
   --dark-component-background: rgb(50, 50, 50);
   --dark-component-border: rgba(255, 255, 255, 0.175);
+  --component-hover-color: rgb(229,229,229);
+  --dark-component-hover-color: rgb(70,70,70);
 }
 
 html, body, #app, #app>div {

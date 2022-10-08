@@ -4,8 +4,11 @@ import Button from "react-bootstrap/Button";
 import '../resources/css/autocompleteSearchBar.css';
 import * as React from "react";
 import axios from "axios";
+import {createSearchParams, useLocation, useNavigate} from "react-router-dom";
 
 function UserCard(props){
+    const navigate = useNavigate();
+    const location = useLocation();
     const [user, setUser] = useState(props.user);
     const [followBtn, setFollowBtn] = useState(<div></div>)
 
@@ -33,8 +36,13 @@ function UserCard(props){
         setUser({...user, ['user_follow_status']: response.data.user_follow_status});
     }
 
+    let navigateToUser = () =>{
+        navigate({pathname: '/Account', search: `?${createSearchParams({username: user.username})}`})
+    }
+
     return(
         <div className="user-card-container">
+        <div className="user-card-container" style={{width: '100%'}} onClick={navigateToUser}>
             <img  className="post-profile-picture" style={{borderRadius: '50%', width: '36px'}}
                   src={user.profile_img ? user.profile_img : profileImg}
                   onError={({currentTarget}) => {
@@ -45,6 +53,7 @@ function UserCard(props){
 
             {user.user_id == localStorage.getItem("user-id") &&
             <p className="username-h5"><small>(you)</small></p>}
+        </div>
 
             {followBtn}
         </div>

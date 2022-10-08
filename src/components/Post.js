@@ -17,7 +17,8 @@ function Post(post) {
     const [likeIcon, setLikeIcon] = useState(false);
     const [replyContent, setReplyContent] = useState(null);
 
-    const likePost = function () {
+    const likePost = function (e) {
+        e.stopPropagation();
         (async () => {
             const response = await fetch('http://localhost:8080/like', {
                 method: 'POST',
@@ -39,6 +40,15 @@ function Post(post) {
         })().catch((e) => console.log(e));
     }
 
+    const navigateToUser = (e) =>{
+        e.stopPropagation();
+        navigate({pathname: '/Account', search: `?${createSearchParams({username: post.post.username})}`})
+    }
+
+    const navigateToPost = (e) =>{
+        e.stopPropagation();
+        navigate({pathname: '/Post', search: `?${createSearchParams({post_id: post.post.post_id})}`})
+    }
 
     const getReply = async function(){
         if(post.post.reply_to){
@@ -70,24 +80,21 @@ function Post(post) {
         <Card style={{margin: '10px'}}>
             <Card.Body>
                 {replyContent && !post.post.isPostPage && <Post post={replyContent}/>}
-                <div className="post-body">
-                    <img  className="post-profile-picture" style={{borderRadius: '50%', width: '48px'}}
+                <div className="post-body" onClick={navigateToPost}>
+                    <img  onClick={navigateToUser} className="post-profile-picture" style={{borderRadius: '50%', width: '48px'}}
                          src={post.post.profile_img ? post.post.profile_img : profileImg}
                          onError={({currentTarget}) => {
                              currentTarget.onerror = null;
                              currentTarget.src = profileImg;
                          }}/>
                     <div className="post-body-content">
-                        <Card.Title>{post.post.username}</Card.Title>
+                        <Card.Title onClick={(e)=>navigateToUser(e)}>{post.post.username}</Card.Title>
                         <Card.Text>
                             {post.post.content}
                         </Card.Text>
                         <div className="post-interaction-buttons">
                             <div className="reply-icon-button-container">
-                                <button className='button' onClick={() => navigate({
-                                    pathname: '/Post',
-                                    search: `?${createSearchParams({post_id: post.post.post_id})}`
-                                })}><ChatBubbleOutlineIcon className="post-icon"/></button>
+                                <button className='button' onClick={navigateToPost}><ChatBubbleOutlineIcon className="post-icon"/></button>
                                 <p>{post.post.reply_count}</p>
                             </div>
                             <div className="like-icon-button-container">

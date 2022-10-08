@@ -29,7 +29,7 @@ function Posts(p) {
     })
 
     return (
-        <div style={{margin: 'auto', width: '50%', padding:'10px' }}>
+        <div style={{margin: 'auto', width: '100%', padding:'10px' }}>
             <div>{generatePosts}</div>
         </div>
     )

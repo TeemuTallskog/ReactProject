@@ -21,6 +21,11 @@
     width: 100%;
     max-width: 640px;
     background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .popup-inner #close-btn{

@@ -3,11 +3,18 @@ import {Button, ButtonGroup} from "@mui/material";
 import Posts from "../components/Posts";
 import Followers from "../components/Followers";
 import Follows from "../components/Follows";
+import Popup from "../components/Popup";
 import {useSearchParams} from "react-router-dom";
 import axios from "axios";
+import '../resources/css/account.css';
+import profileImg from "../resources/images/profile_img_default.png";
+import ProfileImageCrop from "./ProfileImageCrop";
+import UpdateBioForm from "./UpdateBioForm";
+import Button2 from "react-bootstrap/Button";
 
 function Account() {
-    
+    const [editing, setEditing] = useState(false);
+    const [account, setAccount] = useState({});
     const [searchParams] = useSearchParams();
     const [posts, setPosts] = useState(0);
     const [follows, setFollows] = useState(0);
@@ -29,6 +36,7 @@ function Account() {
                     setFollowers(resp.data.followers)
                     setFollows(resp.data.follows)
                     setFollow(resp.data.isFollowing)
+                    setAccount(resp.data.user);
                     if(resp.data.myUser)
                         setFollowButton(false)
                     else 
@@ -74,11 +82,10 @@ function Account() {
 
     let followButton= () =>{
         if(hasFollowButton){
-
             if(isFollowing){
-                return <><Button variant="contained" onClick={()=>follow(false)}>Following</Button><br/></>;
+                return <Button2 className="follow-button following profile-action-button" onClick={()=>follow(false)}>Following</Button2>;
             } else {
-                return <><Button variant="outlined" onClick={()=>follow(true)}>Follow</Button><br/></>;
+                return <Button2 className="follow-button profile-action-button" onClick={()=>follow(true)}>Follow</Button2>;
             }
         }
         else {
@@ -96,14 +103,31 @@ function Account() {
    
     
     return (
-        <div style={{margin: 'auto', width: '50%', padding:'10px' }}>
-            <div><p>{searchParams.get("username")} {followButton()}</p></div>
+        <div style={{margin: 'auto', maxWidth: '880px', padding:'10px' }}>
+            <div className="account-card-container">
+            <img  className="post-profile-picture-large" style={{borderRadius: '50%', width: '96px'}}
+                  src={account.profile_img ? account.profile_img : profileImg}
+                  onError={({currentTarget}) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src = profileImg;
+                  }}/>
+                {hasFollowButton ? <div>{followButton()}</div>
+                    : <div><Button2 className="profile-action-button" onClick={() => setEditing(true)}>Edit profile</Button2></div>}
+            <div><h4>{searchParams.get("username")}</h4></div>
+            <div  style={{ width: '50%', overflowWrap: 'break-word'}}><p>{account.bio}</p></div>
+            </div>
             <ButtonGroup justify = "center">
                 <Button variant={activeButton === "posts" ?"outlined" : "contained"} name="posts" onClick={clickButton}>Posts {posts}</Button>
                 <Button variant={activeButton === "followers" ?"outlined" : "contained"} name="followers" onClick={clickButton}>Followers {followers}</Button>
-                <Button variant={activeButton === "follows" ?"outlined" : "contained"} name="follows" onClick={clickButton}>Followed {follows}</Button>
+                <Button variant={activeButton === "follows" ?"outlined" : "contained"} name="follows" onClick={clickButton}>Following {follows}</Button>
             </ButtonGroup>
             <div>{generateSelected()}</div>
+            <Popup trigger={editing} setTrigger={setEditing}>
+                <h5>Edit profile picture</h5>
+                <ProfileImageCrop/>
+                <h5>Edit bio</h5>
+                <UpdateBioForm bio={account.bio}/>
+            </Popup>
         </div>
     )
 }

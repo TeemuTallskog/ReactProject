@@ -2,9 +2,10 @@ import {useEffect, useState} from "react";
 import {Card} from "react-bootstrap";
 import Post from "./Post";
 import PostForm from "./PostForm";
+import {useNavigate} from "react-router-dom";
 
 function HomePage() {
-
+    const navigate = useNavigate();
     const [posts, setPosts] = useState([]);
 
     const fetchPosts = function (){
@@ -22,6 +23,9 @@ function HomePage() {
                     console.log(data);
                     setPosts(data.posts);
                 })
+            }
+            if(response.status === 403 || response.status === 401){
+                navigate('/LogInForm');
             }
         })().catch(err => console.log(err));
     }

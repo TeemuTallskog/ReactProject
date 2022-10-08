@@ -1,13 +1,10 @@
 import {useEffect, useState} from "react";
-import {ListGroup} from "react-bootstrap";
-import {useNavigate, useLocation, createSearchParams} from "react-router-dom";
 import axios from "axios";
+import UserCard from "./UserCard";
 
 function Follows(f) {
 
     const [follows, setFollows] = useState([]);
-    const navigate = useNavigate();
-    const location = useLocation();
 
     const fetchFollows = function (){
         (async() =>{
@@ -26,19 +23,15 @@ function Follows(f) {
         fetchFollows();
     }, []);
 
-    let clickFollowedUser = (e, user) =>{
-        navigate({pathname: location.pathname, search: `?${createSearchParams({username: user})}`})
-    }
-
     const generateFollows = follows.map((item) =>{
-        return <ListGroup.Item className="d-flex justify-content-between align-items-start" key={item.userId} action onClick={e=> clickFollowedUser(e,item.username)}>{item.username}</ListGroup.Item>
+        return <li key={item.user_id}><UserCard user={item}/></li>
     })
 
     return (
-        <div style={{margin: 'auto', width: '50%', padding:'10px' }}>
-            <ListGroup>
+        <div style={{margin: 'auto',width: '50%', padding:'10px' }}>
+            <ul style={{listStyle: 'none', paddingLeft: '0'}}>
                 {generateFollows}
-            </ListGroup>
+            </ul>
         </div>
     )
 }

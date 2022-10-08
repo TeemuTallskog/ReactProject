@@ -44,7 +44,7 @@ function NavigationBar() {
             <Button variant="link" onClick={logout}>Logout</Button>
         </>
 
-        displayMyAccount = <NavLink onClick={() => navigate({pathname: 'Account', search: `?${createSearchParams({username: localStorage.getItem("username")})}`})}>My Account</NavLink>
+        displayMyAccount = <NavLink onClick={() => navigate({pathname: 'Account', search: `?${createSearchParams({username: localStorage.getItem("username")})}`})}>Profile</NavLink>
         
     }
 
