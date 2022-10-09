@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/Account.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/Account.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {useEffect, useState} from "react";
+import {Button, ButtonGroup} from "@mui/material";
+import Posts from "../components/Posts";
+import Followers from "../components/Followers";
+import Follows from "../components/Follows";
+import Popup from "../components/Popup";
+import {useSearchParams} from "react-router-dom";
+import axios from "axios";
+import '../resources/css/account.css';
+import profileImg from "../resources/images/profile_img_default.png";
+import ProfileImageCrop from "./ProfileImageCrop";
+import UpdateBioForm from "./UpdateBioForm";
+import Button2 from "react-bootstrap/Button";
+
+function Account() {
+    /**
+     * searchParams
+     * {boolean} editing - is edit profile popup on?
+     * {object} account - user object
+     * {int} posts - user's post count
+     * {int} follows - user's follow count
+     * {int} followers - user's follower count
+     * {string} activeButton - currently pressed button
+     * {string} username
+     * {boolean} hasFollowButton - if false follw button disappears
+     * {boolean} isFollowing - tells the status of follow button
+     * {boolean} shouldRender - used for changing the follow button
+     */
+    const [editing, setEditing] = useState(false);
+    const [account, setAccount] = useState({});
+    const [searchParams] = useSearchParams();
+    const [posts, setPosts] = useState(0);
+    const [follows, setFollows] = useState(0);
+    const [followers, setFollowers] = useState(0);
+    const [activeButton, setActiveButton] = useState("posts");
+    const [username, setUsername] = useState("")
+    const [hasFollowButton, setFollowButton] = useState(true)
+    const [isFollowing, setFollow] = useState(false)
+    const [shouldRender, reRender] = useState(false)
+
+
+     /**
+     * gets the account info from database by the searchParam username and returns the account info.
+     */
+    const fetchAccount = function (){
+        (async() =>{
+            await axios.get('http://localhost:8080/account', {
+                params: {username: searchParams.get("username")},
+                headers: {'Authorization': localStorage.getItem("accessToken")}
+            }).then(resp=>{
+                if(resp.status === 202){
+                    setPosts(resp.data.posts);
+                    setFollowers(resp.data.followers)
+                    setFollows(resp.data.follows)
+                    setFollow(resp.data.isFollowing)
+                    setAccount(resp.data.user);
+                    if(resp.data.myUser)
+                        setFollowButton(false)
+                    else 
+                        setFollowButton(true)
+                }
+            })
+            
+        })().catch(err => console.log(err));
+    }
+
+
+    if(searchParams.get("username") != username || shouldRender){
+        reRender(false)   
+        setUsername(searchParams.get("username"))
+        fetchAccount();
+        if(!shouldRender)
+            setActiveButton("posts")
+    }
+
+
+     /**
+     * changes wheather posts, followers or follows are shown
+     */
+    const clickButton = (e) =>{
+        setActiveButton(e.target.name)
+    }
+
+     /**
+     * creates the posts, followers and follows
+     */
+    let generateSelected =()=> {
+        if(activeButton === "posts"){
+            if(posts >0)
+                return &lt;Posts item={searchParams.get("username")}/>
+            else
+                return &lt;>&lt;br/>&lt;p>No posts.&lt;/p>&lt;/>
+        } else if(activeButton === "followers"){
+            if(followers > 0 )
+                return &lt;Followers item={searchParams.get("username")}/>;
+            else
+                return &lt;>&lt;br/>&lt;p>No followers&lt;/p>&lt;/>
+        } else if(activeButton === "follows"){
+            if(follows >0)
+                return &lt;Follows item={searchParams.get("username")}/>;
+            else
+                return &lt;>&lt;br/>&lt;p>No follows&lt;/p>&lt;/>
+        }
+    }
+
+     /**
+     * chooses the follow button status
+     */
+    let followButton= () =>{
+        if(hasFollowButton){
+            if(isFollowing){
+                return &lt;Button2 className="follow-button following profile-action-button" onClick={()=>follow(false)}>Following&lt;/Button2>;
+            } else {
+                return &lt;Button2 className="follow-button profile-action-button" onClick={()=>follow(true)}>Follow&lt;/Button2>;
+            }
+        }
+        else {
+            return &lt;>&lt;/>
+        }
+    }
+
+     /**
+     * follow or unfollow user and update it in the database
+     */
+    const follow = function(following){
+        (async() =>{
+            await axios.post('http://localhost:8080/user/follow',{following: following, username: searchParams.get("username")} ,{
+                headers: {'Authorization': localStorage.getItem("accessToken")}}).then(resp=>{reRender(true)});
+        })().catch((e)=> console.log(e));
+    }
+   
+    
+    return (
+        &lt;div style={{margin: 'auto', maxWidth: '880px', padding:'10px' }}>
+            &lt;div className="account-card-container">
+            &lt;img  className="post-profile-picture-large" style={{borderRadius: '50%', width: '96px'}}
+                  src={account.profile_img ? account.profile_img : profileImg}
+                  onError={({currentTarget}) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src = profileImg;
+                  }}/>
+                {hasFollowButton ? &lt;div>{followButton()}&lt;/div>
+                    : &lt;div>&lt;Button2 className="profile-action-button" onClick={() => setEditing(true)}>Edit profile&lt;/Button2>&lt;/div>}
+            &lt;div>&lt;h4>{searchParams.get("username")}&lt;/h4>&lt;/div>
+            &lt;div  style={{ width: '50%', overflowWrap: 'break-word'}}>&lt;p>{account.bio}&lt;/p>&lt;/div>
+            &lt;/div>
+            &lt;ButtonGroup justify = "center">
+                &lt;Button variant={activeButton === "posts" ?"outlined" : "contained"} name="posts" onClick={clickButton}>Posts {posts}&lt;/Button>
+                &lt;Button variant={activeButton === "followers" ?"outlined" : "contained"} name="followers" onClick={clickButton}>Followers {followers}&lt;/Button>
+                &lt;Button variant={activeButton === "follows" ?"outlined" : "contained"} name="follows" onClick={clickButton}>Following {follows}&lt;/Button>
+            &lt;/ButtonGroup>
+            &lt;div>{generateSelected()}&lt;/div>
+            &lt;Popup trigger={editing} setTrigger={setEditing}>
+                &lt;h5>Edit profile picture&lt;/h5>
+                &lt;ProfileImageCrop/>
+                &lt;h5>Edit bio&lt;/h5>
+                &lt;UpdateBioForm bio={account.bio}/>
+            &lt;/Popup>
+        &lt;/div>
+    )
+}
+
+export default Account;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CustomUserSearch.html">CustomUserSearch</a></li><li><a href="DrowDownOptionField.html">DrowDownOptionField</a></li><li><a href="HomePage.html">HomePage</a></li><li><a href="Popup.html">Popup</a></li><li><a href="Post.html">Post</a></li><li><a href="PostForm.html">PostForm</a></li><li><a href="PostPage.html">PostPage</a></li><li><a href="ProfileImageCrop.html">ProfileImageCrop</a></li><li><a href="SignUpForm.html">SignUpForm</a></li><li><a href="UpdateBioForm.html">UpdateBioForm</a></li><li><a href="UserCard.html">UserCard</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Followers">Followers</a></li><li><a href="global.html#Follows">Follows</a></li><li><a href="global.html#Posts">Posts</a></li><li><a href="global.html#verifyJWT">verifyJWT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Oct 09 2022 11:18:56 GMT+0300 (Itä-Euroopan kesäaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

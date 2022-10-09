@@ -31,7 +31,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --runInBand",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "doc": "jsdoc -c jsdoc.json"
   },
   "eslintConfig": {
     "extends": [
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "jest": "^27.5.1",
+    "jsdoc": "^3.6.11",
     "multer": "^1.4.5-lts.1",
     "react-router-dom": "^6.4.1",
     "supertest": "^6.3.0",

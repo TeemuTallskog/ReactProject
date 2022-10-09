@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/Post.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/Post.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {Card, Row, Col} from "react-bootstrap";
+import moment from "moment";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import '../resources/css/iconButton.css';
+import {useEffect, useState} from "react";
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import {useNavigate, createSearchParams} from "react-router-dom";
+import profileImg from '../resources/images/profile_img_default.png'
+import axios from "axios";
+import '../resources/css/post.css';
+
+/**
+ *
+ * @param post - recieves a post object as a param and renders the data
+ * @returns {JSX.Element}
+ * @constructor
+ */
+function Post(post) {
+    /**
+     * {likeStatus} boolean - displays whether or not logged in user has liked the post
+     * {totalLikes} Number - total likes on a post
+     * {likeIcon} changes according to like status
+     * {replyContent} if post is a reply it will display the original post as a header
+     */
+    const navigate = useNavigate();
+    const [likeStatus, setLikeStatus] = useState(post.post.user_like_status);
+    const [totalLikes, setTotalLikes] = useState(post.post.total_likes);
+    const [likeIcon, setLikeIcon] = useState(false);
+    const [replyContent, setReplyContent] = useState(null);
+
+    /**
+     * sends a query to the server to like the post
+     */
+    const likePost = function (e) {
+        e.stopPropagation();
+        (async () => {
+            const response = await fetch('http://localhost:8080/like', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem("accessToken")
+                },
+                body: JSON.stringify({post_id: post.post.post_id})
+            });
+            if (response.status === 202) {
+                response.json().then((data) => {
+                    console.log(data);
+                    setTotalLikes(data.total_likes);
+                    setLikeStatus(data.user_like_status);
+                })
+            }
+
+        })().catch((e) => console.log(e));
+    }
+
+    /**
+     * navigate to author
+     */
+    const navigateToUser = (e) =>{
+        e.stopPropagation();
+        navigate({pathname: '/Account', search: `?${createSearchParams({username: post.post.username})}`})
+    }
+
+    /**
+     * navigate to post page
+     */
+    const navigateToPost = (e) =>{
+        e.stopPropagation();
+        navigate({pathname: '/Post', search: `?${createSearchParams({post_id: post.post.post_id})}`})
+    }
+
+    /**
+     * if the post is a reply it will fetch the original post
+     */
+    const getReply = async function(){
+        if(post.post.reply_to){
+            const response = await axios.get('http://localhost:8080/post', {
+                params: {post_id: post.post.reply_to},
+                headers: {'Authorization': localStorage.getItem("accessToken")}
+            }).catch((e) => {
+                console.log(e);
+                setReplyContent(null);
+            });
+            response.data.post[0].reply_to = null;
+            response.data.post[0].isEmbedded = true;
+            setReplyContent(response.data.post[0]);
+        }
+    }
+
+    /**
+     * adjusts the like icon according to user like status
+     */
+    useEffect(() => {
+        if (likeStatus == 1) {
+            setLikeIcon(&lt;FavoriteIcon className="post-icon"/>);
+        }else {
+            setLikeIcon(&lt;FavoriteBorderIcon className="post-icon"/>);
+        }
+        if (post.post.reply_to) {
+            getReply();
+        }
+    }, [likeStatus, post.post.reply_to])
+
+    return (
+        &lt;Card style={{margin: '10px'}}>
+            &lt;Card.Body>
+                {replyContent &amp;&amp; !post.post.isPostPage &amp;&amp; &lt;Post post={replyContent}/>}
+                &lt;div className="post-body" onClick={navigateToPost}>
+                    &lt;img  onClick={navigateToUser} className="post-profile-picture" style={{borderRadius: '50%', width: '48px'}}
+                         src={post.post.profile_img ? post.post.profile_img : profileImg}
+                         onError={({currentTarget}) => {
+                             currentTarget.onerror = null;
+                             currentTarget.src = profileImg;
+                         }}/>
+                    &lt;div className="post-body-content">
+                        &lt;Card.Title onClick={(e)=>navigateToUser(e)}>{post.post.username}&lt;/Card.Title>
+                        &lt;Card.Text>
+                            {post.post.content}
+                        &lt;/Card.Text>
+                        &lt;div className="post-interaction-buttons">
+                            &lt;div className="reply-icon-button-container">
+                                &lt;button className='button' onClick={navigateToPost}>&lt;ChatBubbleOutlineIcon className="post-icon"/>&lt;/button>
+                                &lt;p>{post.post.reply_count}&lt;/p>
+                            &lt;/div>
+                            &lt;div className="like-icon-button-container">
+                                &lt;button onClick={likePost} className='button'>{likeIcon}&lt;/button>
+                                &lt;p>{totalLikes}&lt;/p>
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/div>
+                {!post.post.isEmbedded &amp;&amp; &lt;Card.Footer>{moment(post.post.created).fromNow()}&lt;/Card.Footer>}
+            &lt;/Card.Body>
+        &lt;/Card>
+    )
+}
+
+export default Post;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CustomUserSearch.html">CustomUserSearch</a></li><li><a href="DrowDownOptionField.html">DrowDownOptionField</a></li><li><a href="HomePage.html">HomePage</a></li><li><a href="Popup.html">Popup</a></li><li><a href="Post.html">Post</a></li><li><a href="PostForm.html">PostForm</a></li><li><a href="PostPage.html">PostPage</a></li><li><a href="ProfileImageCrop.html">ProfileImageCrop</a></li><li><a href="SignUpForm.html">SignUpForm</a></li><li><a href="UpdateBioForm.html">UpdateBioForm</a></li><li><a href="UserCard.html">UserCard</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Followers">Followers</a></li><li><a href="global.html#Follows">Follows</a></li><li><a href="global.html#Posts">Posts</a></li><li><a href="global.html#verifyJWT">verifyJWT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Oct 09 2022 11:18:56 GMT+0300 (Itä-Euroopan kesäaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

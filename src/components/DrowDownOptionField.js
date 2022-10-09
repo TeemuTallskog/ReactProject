@@ -38,7 +38,7 @@ function DrowDownOptionField(props){
     /**
      * filters options array according to search string
      * @param search string
-     * @returns {*[]} filtered array of usercards according to the search param
+     * @returns {[]} filtered array of usercards according to the search param
      */
     const filteredList = (search) =>{
         if(options.length > 0){

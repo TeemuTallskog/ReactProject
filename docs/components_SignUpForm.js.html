@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/SignUpForm.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/SignUpForm.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Form from 'react-bootstrap/Form';
+import {useState} from 'react';
+import Col from 'react-bootstrap/Col'
+import Button from "react-bootstrap/Button";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+/**
+ * form to create a new account
+ * @returns {JSX.Element}
+ * @constructor
+ */
+function SignUpForm() {
+
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        email: '',
+        username: '',
+        password: '',
+        confirmPassword: ''
+    });
+
+    /**
+     * list of validation erros
+     */
+    const [errors, setErrors] = useState({});
+
+    /**
+     * on input change updates the form data and clears errors
+     */
+    const onChange = (e) =>{
+        setFormData({...formData, [e.target.name]: e.target.value})
+        if(!!errors[e.target.name]) setErrors({
+            ...errors,
+            [e.target.name]: null
+        })
+    };
+
+    /**
+     * attempts to send a query to create a new account to the database
+     * receives an access token, username and user id on successful query and saves them to local storage and navigates to the home page
+     * @param event
+     */
+    const handleSubmit = (event) =>{
+        event.preventDefault();
+        const formErrors = validateForm();
+        if(Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
+        (async() =>{
+            const response = await fetch('http://localhost:8080/signup', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    username: formData.username,
+                    password: formData.password
+                })
+            })
+            if(response.status === 202){
+                response.json().then((data) =>{
+                    console.log(data);
+                    localStorage.setItem("accessToken", data.accessToken);
+                    localStorage.setItem("username", data.username);
+                    localStorage.setItem("user-id", data.user_id);
+                    navigate('/');
+                    window.location.reload(false);
+                })
+            }
+            if(response.status === 409){
+                console.log("username or email taken");
+                setErrors({username: "Email or username already taken", email: "Email or username already taken"});
+                return;
+            }
+        })().catch(err => console.log(err));
+
+    }
+
+    /**
+     * used to validate the form
+     * @returns {{}}
+     */
+    const validateForm = () =>{
+        const newErrors = {}
+        if(!(formData.username.length > 1) &amp;&amp;
+            (!formData.username.length &lt; 20)) newErrors.username = 'Invalid username';
+        if(!(formData.password.length > 4) &amp;&amp;
+            (!formData.password.length &lt; 50)) newErrors.password = 'invalid password length!';
+        if(!(formData.email.length > 0)) newErrors.email = 'invalid email!';
+        if(formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords don't match!";
+        return newErrors;
+    }
+
+    return(
+        &lt;div style={{margin: 'auto', width: '50%', padding:'10px'}}>
+            &lt;Form onSubmit={handleSubmit} >
+                &lt;Form.Group className="mb-3" md="5" controlId="email" as={Col} style={{margin: "auto"}}>
+                    &lt;Form.Label>Email address&lt;/Form.Label>
+                    &lt;Form.Control
+                        className="form-input"
+                        type="email"
+                        placeholder="Enter email"
+                        required
+                        name="email"
+                        value={formData.email}
+                        onChange={onChange}
+                        isInvalid={!!errors.email}
+                    />
+                    &lt;Form.Control.Feedback type="invalid">
+                        {errors.email}
+                    &lt;/Form.Control.Feedback>
+                &lt;/Form.Group>
+                &lt;Form.Group className="mb-3" md="5" controlId="username" as={Col} style={{margin: "auto"}}>
+                    &lt;Form.Label>Username&lt;/Form.Label>
+                    &lt;Form.Control
+                        className="form-input"
+                        type="text"
+                        placeholder="Enter username"
+                        required
+                        name="username"
+                        value={formData.username}
+                        onChange={onChange}
+                        isInvalid={!!errors.username}
+                    />
+                    &lt;Form.Control.Feedback type="invalid">
+                        {errors.username}
+                    &lt;/Form.Control.Feedback>
+                &lt;/Form.Group>
+                &lt;Form.Group className="mb-3" md="5" controlId="password" as={Col} style={{margin: "auto"}}>
+                    &lt;Form.Label>Password&lt;/Form.Label>
+                    &lt;Form.Control
+                        className="form-input"
+                        type="password"
+                        placeholder="Password"
+                        required
+                        name="password"
+                        value={formData.password}
+                        onChange={onChange}
+                        isInvalid={!!errors.password}
+                    />
+                    &lt;Form.Control.Feedback type="invalid">
+                        {errors.password}
+                    &lt;/Form.Control.Feedback>
+                &lt;/Form.Group>
+                &lt;Form.Group className="mb-3" md="5" controlId="confirmPassword" as={Col} style={{margin: "auto"}}>
+                    &lt;Form.Label>Confirm password&lt;/Form.Label>
+                    &lt;Form.Control
+                        className="form-input"
+                        type = "password"
+                        required
+                        placeholder= "password"
+                        name = "confirmPassword"
+                        value = {formData.confirmPassword}
+                        onChange={onChange}
+                        isInvalid={!!errors.confirmPassword}
+                    />
+                    &lt;Form.Control.Feedback type="invalid">
+                        {errors.confirmPassword}
+                    &lt;/Form.Control.Feedback>
+                &lt;/Form.Group>
+                &lt;Button variant="primary" type="submit">
+                    Sign up
+                &lt;/Button>
+            &lt;/Form>
+        &lt;/div>
+    );
+}
+
+export default SignUpForm;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CustomUserSearch.html">CustomUserSearch</a></li><li><a href="DrowDownOptionField.html">DrowDownOptionField</a></li><li><a href="HomePage.html">HomePage</a></li><li><a href="Popup.html">Popup</a></li><li><a href="Post.html">Post</a></li><li><a href="PostForm.html">PostForm</a></li><li><a href="PostPage.html">PostPage</a></li><li><a href="ProfileImageCrop.html">ProfileImageCrop</a></li><li><a href="SignUpForm.html">SignUpForm</a></li><li><a href="UpdateBioForm.html">UpdateBioForm</a></li><li><a href="UserCard.html">UserCard</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Followers">Followers</a></li><li><a href="global.html#Follows">Follows</a></li><li><a href="global.html#Posts">Posts</a></li><li><a href="global.html#verifyJWT">verifyJWT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Oct 09 2022 11:18:56 GMT+0300 (Itä-Euroopan kesäaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
