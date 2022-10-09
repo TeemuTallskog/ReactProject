@@ -3,13 +3,30 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import '../resources/css/updateBioFrom.css';
 
+/**
+ * form to update user bio
+ * @param props
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function UpdateBioForm(props){
     const [formData, setFormData] = useState({
         content: ''
     });
+
+    /**
+     * character count
+     */
     const [count, setCount] = useState(0);
 
+    /**
+     * list of errors
+     */
     const [errors, setErrors] = useState({});
+
+    /**
+     * on user input updates the form data and clears errors
+     */
     const onChange = (e) =>{
         if(e.target.value.length < 255){
             setFormData({...formData, [e.target.name]: e.target.value})
@@ -21,6 +38,10 @@ function UpdateBioForm(props){
         })
     };
 
+    /**
+     * submits the new bio to the server
+     * @param event
+     */
     const handleSubmit = (event) =>{
         event.preventDefault();
         const formErrors = validateForm();
@@ -61,6 +82,10 @@ function UpdateBioForm(props){
 
     }
 
+    /**
+     * used to validate form data
+     * @returns {{}}
+     */
     const validateForm = () =>{
         const newErrors = {}
         if(formData.content.length === 0 || formData.content.length > 254) newErrors.content = '';

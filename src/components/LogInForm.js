@@ -15,7 +15,15 @@ function LogInForm() {
         password: ''
     });
 
+    /**
+     * {errors} list of errors
+     */
     const [errors, setErrors] = useState({});
+
+    /**
+     * changes form data state and empties errors on change
+     * @param e
+     */
     const onChange = (e) =>{
         setFormData({...formData, [e.target.name]: e.target.value})
         if(!!errors[e.target.name]) setErrors({
@@ -24,6 +32,11 @@ function LogInForm() {
         })
     };
 
+    /**
+     * sends a log in attempt to the server if no errors exist
+     * on successfull login, stores accesstoken, username and user id to local storage and navigates to home page
+     * @param event
+     */
     const handleSubmit = (event) =>{
         event.preventDefault();
         const formErrors = validateForm();
@@ -63,6 +76,10 @@ function LogInForm() {
 
     }
 
+    /**
+     * validates form
+     * @returns {{}}
+     */
     const validateForm = () =>{
         const newErrors = {}
         if(!(formData.password.length > 4) &&

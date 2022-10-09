@@ -11,9 +11,19 @@ import DrowDownOptionField from "./DrowDownOptionField";
 const axios = require('axios');
 
 
-
-
+/**
+ * Search bar that allows user to search other users
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function CustomUserSearch(){
+    /**
+     * {options} array of loaded users
+     * {loading} boolean - is the client already doing a query
+     * {search} search input string
+     * {textAreaRef} reference to the text area
+     * {isOpen} is the text area focused
+     */
     const [options, setOptions] = React.useState([]);
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState({
@@ -23,6 +33,9 @@ function CustomUserSearch(){
     const [isOpen, setIsOpen] = useState(false);
 
 
+    /**
+     * when search term gets changed query gets sent to the database
+     */
     const onChange = (e) => {
         setSearch({...search, [e.target.name]: e.target.value});
         setIsOpen(true);

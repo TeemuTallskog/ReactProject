@@ -36,7 +36,13 @@ con.connect(function(err) {
 
 const query = util.promisify(con.query).bind(con);
 
-//Verifies JWT token and returns a user object if valid or null
+/**
+ * Verifies JWT token and returns a user object if valid or null
+ * @param req
+ * @param res
+ * @param next
+ * @returns {null|user object}
+ */
 const verifyJWT = function (req, res, next){
     if(req.headers.authorization){
         try{
@@ -61,6 +67,14 @@ app.get('/', (req, res) => {
     res.send('Hello');
 })
 
+/**
+ * api used to login and generate a jwt token
+ * @param{email}
+ * @param{password}
+ * @returns{accessToken} - JWT token
+ * @returns{username}
+ * @returns{user_id}
+ */
 app.post('/login', urlencodedParser, (req, res) => {
     let sql = "SELECT * FROM user WHERE email = ?";
     (async() => {
@@ -98,7 +112,15 @@ app.post('/login', urlencodedParser, (req, res) => {
     })();
 });
 
-
+/**
+ * api used to sign up and generate a jwt token
+ * @param{username}
+ * @param{email}
+ * @param{password}
+ * @returns{accessToken} - JWT token
+ * @returns{username}
+ * @returns{user_id}
+ */
 app.post("/signup", urlencodedParser, (req, res) => {
     let sql = "SELECT count(*) AS foundCount FROM user WHERE username = ? OR email = ?";
     (async() => {
@@ -142,6 +164,11 @@ app.post("/signup", urlencodedParser, (req, res) => {
     })()
 });
 
+/**
+ * api to retrieve a single post
+ * @param{post_id} ID - of the post you want to retrieve
+ * @returns{post} object
+ */
 app.get("/post", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
@@ -161,7 +188,12 @@ app.get("/post", urlencodedParser, (req, res) => {
 });
 
 
-
+/**
+ * api to create a new post
+ * @param{content} string - content of the post
+ * @param{reply_to} ID - optional parameter indicating the post is a reply to another post
+ * @returns{success/error}
+ */
 app.post("/post", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user){
@@ -180,7 +212,10 @@ app.post("/post", urlencodedParser, (req, res) => {
     })();
 });
 
-//Returns all posts and their author data, total likes, user like status and reply count from users that the logged in user is following + logged in users own posts
+/**
+ * Returns all posts and their author data, total likes, user like status and reply count from users that the logged in user is following + logged in users own posts
+ * @returns{posts:[]} array of post objects
+ */
 app.get("/posts" ,urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
@@ -204,6 +239,11 @@ app.get("/posts" ,urlencodedParser, (req, res) => {
     })();
 });
 
+/**
+ * api to retrieve replies to a post
+ * @param{post_id} ID - id of the post you want to fetch replies for
+ * @returns{post:[]} array of post objects from the replies
+ */
 app.get("/replies", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
@@ -222,6 +262,11 @@ app.get("/replies", urlencodedParser, (req, res) => {
     })();
 });
 
+/**
+ * api to search for users
+ * @param{username} string - search string for usernames
+ * @returns{users:[]} - returns an array user objects that match the search
+ */
 app.get("/users", urlencodedParser, (req, res) =>{
     let user = null;
     if(req.headers.authorization){
@@ -246,6 +291,12 @@ app.get("/users", urlencodedParser, (req, res) =>{
     });
 });
 
+/**
+ * api to like a post
+ * @param{post_id} - id of the post you want to like
+ * @return{total_likes} Number - count of total likes on the post
+ * @return{user_like_status} boolean - true->post is now liked, false->post is not liked
+ */
 app.post("/like", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
@@ -372,6 +423,11 @@ app.get("/user/follows", urlencodedParser, (req, res)=>{
     })();
 })
 
+/**
+ * api used to upload a profile picture
+ * @param{base64} image/String - base64 string of the image submitted
+ * @returns success/error
+ */
 app.post("/upload/profile_img", upload.array(), (req, res) =>{
     const user = verifyJWT(req,res);
     if(!user) return;
@@ -397,6 +453,11 @@ app.post("/upload/profile_img", upload.array(), (req, res) =>{
     }
 })
 
+/**
+ * used to retrieve an image from the server
+ * @param{url} string - name of the image on the server
+ * @returns{image} file
+ */
 app.get("/images", urlencodedParser, (req, res) =>{
     let filename = req.query.url;
         res.sendFile(__dirname + "/uploads/" + filename, function (err){
@@ -410,6 +471,11 @@ app.get("/images", urlencodedParser, (req, res) =>{
         });
 })
 
+/**
+ * api used to update user bio
+ * @param{content} string - bio
+ * @returns{success/error}
+ */
 app.post("/update/bio", urlencodedParser, (req, res) =>{
     const user = verifyJWT(req, res);
     if(!user) return;
@@ -422,6 +488,12 @@ app.post("/update/bio", urlencodedParser, (req, res) =>{
     })().catch((e) => res.status(500).json({error: "internal server error"}));
 })
 
+/**
+ * api used to follow a user
+ * @param{follow} boolean - indication true -> follow user, false -> unfollow user
+ * @param{user_id} - id of the user you want to follow
+ * @returns{user_follow_status} boolean - true user is now being followed, false user is not being followed
+ */
 app.post("/follow", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
@@ -467,6 +539,10 @@ app.post("/user/follow", urlencodedParser, (req,res)=>{
     })();
 })
 
+/**
+ * used to get the profile image name of the logged in user
+ * @returns{profile_img} - name of the image file
+ */
 app.get("/profile_img", urlencodedParser, (req, res) =>{
     const user = verifyJWT(req, res);
     if(!user) return;

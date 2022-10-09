@@ -5,6 +5,11 @@ import Button from "react-bootstrap/Button";
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * form to create a new account
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function SignUpForm() {
 
     const navigate = useNavigate();
@@ -16,7 +21,14 @@ function SignUpForm() {
         confirmPassword: ''
     });
 
+    /**
+     * list of validation erros
+     */
     const [errors, setErrors] = useState({});
+
+    /**
+     * on input change updates the form data and clears errors
+     */
     const onChange = (e) =>{
         setFormData({...formData, [e.target.name]: e.target.value})
         if(!!errors[e.target.name]) setErrors({
@@ -25,6 +37,11 @@ function SignUpForm() {
         })
     };
 
+    /**
+     * attempts to send a query to create a new account to the database
+     * receives an access token, username and user id on successful query and saves them to local storage and navigates to the home page
+     * @param event
+     */
     const handleSubmit = (event) =>{
         event.preventDefault();
         const formErrors = validateForm();
@@ -64,6 +81,10 @@ function SignUpForm() {
 
     }
 
+    /**
+     * used to validate the form
+     * @returns {{}}
+     */
     const validateForm = () =>{
         const newErrors = {}
         if(!(formData.username.length > 1) &&

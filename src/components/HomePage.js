@@ -4,10 +4,21 @@ import Post from "./Post";
 import PostForm from "./PostForm";
 import {useNavigate} from "react-router-dom";
 
+/**
+ * home page
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function HomePage() {
+    /**
+     * {posts} array of post objects
+     */
     const navigate = useNavigate();
     const [posts, setPosts] = useState([]);
 
+    /**
+     * retrieves users own posts and posts from users that the current user follows
+     */
     const fetchPosts = function (){
         (async() =>{
             const response = await fetch('http://localhost:8080/posts', {
@@ -34,6 +45,10 @@ function HomePage() {
         fetchPosts();
     }, []);
 
+    /**
+     * generates post componenets from loaded post objects
+     * @type {unknown[]}
+     */
     const generatePosts = posts.map((item) => {
         return <Post post={item} key={item.post_id}/>
     })

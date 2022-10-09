@@ -17,9 +17,17 @@ import axios from "axios";
 
 function NavigationBar() {
 
+    /**
+     * {darkMode} boolean - dark mode toggle stored in local storage
+     * {profilePicture} logged in users profile picture
+     */
     const [darkMode, setDarkMode] = useState(localStorage.getItem("darkMode") ? true : false);
     const [profilePicture, setProfilePicture] = useState(profileImg);
     const navigate = useNavigate();
+
+    /**
+     * handles dark mode toggle
+     */
     useEffect(() => {
         if (darkMode) {
             localStorage.setItem("darkMode", "true");
@@ -30,6 +38,9 @@ function NavigationBar() {
         }
     }, [darkMode]);
 
+    /**
+     * empties local storage and reloads page on logout
+     */
     const logout = () => {
         localStorage.setItem("accessToken", "");
         localStorage.setItem("username", "");
@@ -37,11 +48,18 @@ function NavigationBar() {
         window.location.reload(false);
     }
 
+    /**
+     * navigates to a selected user
+     * @param e
+     */
     const navigateToUser = (e) =>{
         e.stopPropagation();
         navigate({pathname: '/Account', search: `?${createSearchParams({username: localStorage.getItem("username")})}`})
     }
 
+    /**
+     * retrieves logged in users profile image
+     */
     const fetchProfilePicture = () =>{
         (async() =>{
             const response = await axios.get('http://localhost:8080/profile_img', {headers: {authorization: localStorage.getItem("accessToken")}});
@@ -53,6 +71,12 @@ function NavigationBar() {
         fetchProfilePicture();
     }, [])
 
+    /**
+     * if logged in displays username and profile image
+     * else
+     * displays sign in, sign up navigation
+     * @type {JSX.Element}
+     */
     let displayLogin = <><NavLink as={Link} to="/LogInForm">LogIn</NavLink>
         <NavLink as={Link} to="/SignUpForm">SignUp</NavLink></>;
 

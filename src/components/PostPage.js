@@ -4,11 +4,24 @@ import PostForm from "./PostForm";
 import axios from "axios";
 import {useSearchParams} from "react-router-dom";
 
+/**
+ * post page displays original post at the top followed by a post form and replies to the original post
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function PostPage() {
+    /**
+     * {searchParams} url params containing a post id
+     * {post} loaded psot object
+     * {replies} array of loaded replies
+     */
     const [searchParams] = useSearchParams();
     const [post, setPost] = useState();
     const [replies, setReplies] = useState([]);
 
+    /**
+     * takes the url search parameter and attempts to fetch a post from the server
+     */
     useEffect(() =>{
         const fetchPost = function(){
             (async() =>{
@@ -24,6 +37,9 @@ function PostPage() {
             })();
         }
 
+        /**
+         * attempts to fetch replies to the original post
+         */
         const fetchReplies = function (){
             (async() =>{
                 const response = await axios.get('http://localhost:8080/replies',
@@ -44,6 +60,10 @@ function PostPage() {
         fetchReplies();
     },[searchParams]);
 
+    /**
+     * generates post components from the replies
+     * @type {unknown[]}
+     */
     const generateReplies = replies.map((item) => {
         item.isPostPage = true;
         return <Post post={item} key={item.post_id} />

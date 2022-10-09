@@ -3,11 +3,25 @@ import UserCard from "./UserCard";
 import '../resources/css/autocompleteSearchBar.css';
 import LinearProgress from '@mui/material/LinearProgress';
 
+/**
+ * creates a dropdown with user cards and filters them according to the search term
+ * @param props
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function DrowDownOptionField(props){
+    /**
+     * {options} array of loaded usercards
+     * {existingUser} user id's of already loaded cards
+     * {filtered} array of filtered usercards shown to the user
+     */
     const [options, setOptions] = useState([]);
     const [existingUser, setExistingUser] = useState([]);
     const [filtered, setFiltered] = useState([]);
 
+    /**
+     * creates user cards when parent component loads new options
+     */
     useEffect(() =>{
         props.options.map((item) => {
             if(!existingUser.includes(item.user_id)){
@@ -21,6 +35,11 @@ function DrowDownOptionField(props){
         setFiltered([filteredList(props.search)]);
     }, [props.search, options])
 
+    /**
+     * filters options array according to search string
+     * @param search string
+     * @returns {*[]} filtered array of usercards according to the search param
+     */
     const filteredList = (search) =>{
         if(options.length > 0){
             return options.filter(item =>{

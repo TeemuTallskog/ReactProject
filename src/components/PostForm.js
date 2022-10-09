@@ -6,14 +6,27 @@ import React from 'react';
 import {Row} from "react-bootstrap";
 import '../resources/css/postForm.css'
 
+/**
+ * form to create a new post
+ * @param props
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function PostForm(props) {
 
     const [formData, setFormData] = useState({
         content: ''
     });
+    /**
+     * {count} character count
+     * {errors} list of errors
+     */
     const [count, setCount] = useState(0);
-
     const [errors, setErrors] = useState({});
+
+    /**
+     * handles form data change and empties errors on change
+     */
     const onChange = (e) =>{
         if(e.target.value.length < 255){
             setFormData({...formData, [e.target.name]: e.target.value})
@@ -25,6 +38,10 @@ function PostForm(props) {
         })
     };
 
+    /**
+     * attempts to submit the post to the server
+     * @param event
+     */
     const handleSubmit = (event) =>{
         event.preventDefault();
         const formErrors = validateForm();
@@ -58,6 +75,10 @@ function PostForm(props) {
 
     }
 
+    /**
+     * validates errors on the post
+     * @returns {{}}
+     */
     const validateForm = () =>{
         const newErrors = {}
         if(formData.content.length === 0 || formData.content.length > 254) newErrors.content = '';

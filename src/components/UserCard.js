@@ -6,12 +6,26 @@ import * as React from "react";
 import axios from "axios";
 import {createSearchParams, useLocation, useNavigate} from "react-router-dom";
 
+/**
+ * simplified component containing user image, username and a follow button
+ * @param props
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function UserCard(props){
     const navigate = useNavigate();
     const location = useLocation();
+
+    /**
+     * {user} user object
+     * {followBtn} button that allows a user to follow another user
+     */
     const [user, setUser] = useState(props.user);
     const [followBtn, setFollowBtn] = useState(<div></div>)
 
+    /**
+     * sets the follow button according to user follow status and logged in user
+     */
     React.useEffect(() => {
         if(user.user_follow_status === undefined || user.user_id == localStorage.getItem("user-id")) return;
         setFollowBtn((
@@ -22,6 +36,11 @@ function UserCard(props){
     }, [user.user_follow_status]);
 
 
+    /**
+     * sends a query to the server to attempt to follow a user
+     * @param follow
+     * @returns {Promise<void>}
+     */
     const follow = async (follow) =>{
         console.log("follow attempt");
         const response = await axios.post('http://localhost:8080/follow', {
@@ -36,6 +55,9 @@ function UserCard(props){
         setUser({...user, ['user_follow_status']: response.data.user_follow_status});
     }
 
+    /**
+     * onclick navigates to users page
+     */
     let navigateToUser = () =>{
         navigate({pathname: '/Account', search: `?${createSearchParams({username: user.username})}`})
     }

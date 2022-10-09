@@ -29,6 +29,11 @@ function centerAspectCrop(
     )
 }
 
+/**
+ * Takes an image from an input and allows the user to crop the image on a canvas and submit it to the server
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function ProfileImageCrop(){
     const [imgSrc, setImgSrc] = useState('')
     const previewCanvasRef = useRef(null)
@@ -65,7 +70,6 @@ function ProfileImageCrop(){
                 imgRef.current &&
                 previewCanvasRef.current
             ) {
-                // We use canvasPreview as it's much faster than imgPreview.
                 CanvasPreview(
                     imgRef.current,
                     previewCanvasRef.current,
