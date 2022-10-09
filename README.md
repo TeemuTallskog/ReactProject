@@ -33,7 +33,7 @@ DB_USERNAME = "username"
 DB_PASSWORD = "password"
 ~~~~
 
-##REST api description
+## REST api description
 
 | End point | HTTP Method | Description | Parameters | Response |
 |---|---|---|---|---|
@@ -59,7 +59,7 @@ DB_PASSWORD = "password"
 
 
 
-##Introduction
+## Introduction
 
 |Dark Mode | Light mode|
 |---|---|
