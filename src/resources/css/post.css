@@ -104,3 +104,63 @@
 .card-title:hover{
     text-decoration: underline;
 }
+
+.post-options-button{
+    position: absolute;
+    right: 15px;
+    padding: 10px;
+}
+
+.dropdown-toggle{
+    border-radius: 50px;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.btn:first-child{
+    color: black;
+}
+
+.dark .btn:first-child{
+    color:white;
+}
+
+.btn:first-child:hover{
+    background-color: var(--dark-component-hover-color);
+    border: none;
+}
+
+.dark .btn:first-child:hover{
+    background-color: var(--dark-backgroud);
+    border: none;
+}
+
+.dropdown-toggle:after{
+    border: none;
+    margin-left: unset;
+    vertical-align: unset;
+}
+
+.dark .dropdown-menu{
+    background-color: var(--dark-backgroud);
+    color:white;
+}
+
+.dark .dropdown-menu:hover{
+    filter: brightness(150%);
+}
+
+.dark .post-options-option{
+    color: white;
+}
+
+.dark .post-options-option:hover{
+    background-color: unset;
+}
+.post-options-option:hover{
+    background-color: unset;
+}
+.dropdown-menu:hover{
+    filter: brightness(50%);
+}
+

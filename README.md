@@ -41,6 +41,7 @@ DB_PASSWORD = "password"
 |/login|POST|Used for logging in and receiving a jsonwebtoken | email, password | accessToken, username, user id|
 |/post?post_id=|GET|Used for retrieving a single post|authorization, post_id|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
 |/post|POST|Used for creating a new post|authorization, content, reply_to|-|
+|/delete/post?post_id|DELETE|Used to delete posts|authorization, post_id|-|
 |/posts|GET|Used for retrieving posts from followed users for homepage|authorization|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
 |/user/posts?username=|GET|Used for retrieving posts from a user|authorization, username|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
 |/replies?post_id=|GET|Used for retrieving replies for a post|authorization, post_id|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|

@@ -1,4 +1,4 @@
-import {Card, Row, Col} from "react-bootstrap";
+import {Card, Row, Col, DropdownButton} from "react-bootstrap";
 import moment from "moment";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -9,6 +9,9 @@ import {useNavigate, createSearchParams} from "react-router-dom";
 import profileImg from '../resources/images/profile_img_default.png'
 import axios from "axios";
 import '../resources/css/post.css';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import DropdownItem from "react-bootstrap/DropdownItem";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 /**
  *
@@ -28,6 +31,7 @@ function Post(post) {
     const [totalLikes, setTotalLikes] = useState(post.post.total_likes);
     const [likeIcon, setLikeIcon] = useState(false);
     const [replyContent, setReplyContent] = useState(null);
+
 
     /**
      * sends a query to the server to like the post
@@ -103,11 +107,34 @@ function Post(post) {
         }
     }, [likeStatus, post.post.reply_to])
 
+    /**
+     * Used to attempt to delete the post
+     */
+    const deletePost = async () =>{
+        const response = await axios.delete('http://localhost:8080/delete/post', {
+            params: {post_id: post.post.post_id},
+            headers: {'Authorization': localStorage.getItem("accessToken")}
+        }).catch((e) => {
+            console.log(e);
+            return;
+        });
+        window.location.reload(false);
+    }
+
+    /**
+     * defines post options based on if the post is made by the current logged in user
+     * @type {JSX.Element|null}
+     */
+    const postOptions = post.post.user_id == localStorage.getItem("user-id")? <DropdownButton className="post-options-button" onClick={(event => event.stopPropagation())} title={<MoreHorizIcon/>}>
+        <DropdownItem className="post-options-option" onClick={deletePost}><DeleteIcon/>Delete post</DropdownItem>
+    </DropdownButton> : null;
+
     return (
         <Card style={{margin: '10px'}}>
             <Card.Body>
                 {replyContent && !post.post.isPostPage && <Post post={replyContent}/>}
                 <div className="post-body" onClick={navigateToPost}>
+                    {postOptions}
                     <img  onClick={navigateToUser} className="post-profile-picture" style={{borderRadius: '50%', width: '48px'}}
                          src={post.post.profile_img ? post.post.profile_img : profileImg}
                          onError={({currentTarget}) => {

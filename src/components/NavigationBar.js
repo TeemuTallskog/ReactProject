@@ -83,7 +83,6 @@ function NavigationBar() {
     let displayMyAccount = <></>
 
     if (localStorage.getItem("username")) {
-        console.log(profilePicture);
         displayLogin = <>
             <img  onClick={navigateToUser} className="post-profile-picture navbar-img" style={{borderRadius: '50%', width: '38px', height: '38px', margin: '0 10px 0 0'}}
                   src={profilePicture}

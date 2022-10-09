@@ -559,6 +559,27 @@ app.get("/profile_img", urlencodedParser, (req, res) =>{
     })();
 })
 
+/**
+ * used to delete a post
+ * @param{post_id} id - id of the post to be deleted
+ * @returns{success/error}
+ */
+app.delete("/delete/post", urlencodedParser, (req, res) =>{
+    const user = verifyJWT(req, res);
+    if(!user) return;
+    let sql = "DELETE FROM post WHERE user_id = ? AND post_id = ?";
+    (async() => {
+        const response = await query(sql, [user.user_id, req.query.post_id]);
+        if(response){
+            res.status(202).json({
+                message: "success"
+            })
+        }else{
+            res.status(500).json({error: "internal server error"});
+        }
+    })();
+})
+
 app.listen(port, () => {
     console.log(`App listening on port http://localhost:${port}`)
 })
