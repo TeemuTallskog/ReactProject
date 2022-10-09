@@ -30,7 +30,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest --runInBand",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -52,8 +52,10 @@
     ]
   },
   "devDependencies": {
+    "jest": "^27.5.1",
     "multer": "^1.4.5-lts.1",
     "react-router-dom": "^6.4.1",
+    "supertest": "^6.3.0",
     "uuid": "^9.0.0"
   }
 }

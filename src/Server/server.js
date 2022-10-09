@@ -18,14 +18,16 @@ app.use(bodyParser.json());
 
 require('dotenv').config({path: '.env'});
 
-const con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "project_db"
-});
+
 
 app.use(cors());
+
+const con = mysql.createConnection({
+    host: "localhost",
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+});
 
 con.connect(function(err) {
     if(err) throw err;
@@ -61,7 +63,6 @@ app.get('/', (req, res) => {
 
 app.post('/login', urlencodedParser, (req, res) => {
     let sql = "SELECT * FROM user WHERE email = ?";
-    console.log("attempt");
     (async() => {
         try{
             const response = await query(sql, [req.body.email]);
@@ -124,6 +125,7 @@ app.post("/signup", urlencodedParser, (req, res) => {
                         email: req.body.email,
                         password: hashedPass
                     }
+                    console.log(process.env.TOKEN_KEY);
                     const accessToken = jwt.sign({user: user}, process.env.TOKEN_KEY, {expiresIn: '1h'});
                     res.status(202).json({accessToken: accessToken, username: req.body.username, user_id: response.insertId});
                 }else {
@@ -438,7 +440,10 @@ app.post("/follow", urlencodedParser, (req, res) => {
         const resp = await query(sql, [user.user_id, req.body.user_id]);
         if(!resp) return;
         res.status(202).json({user_follow_status: req.body.follow});
-    })().catch((e) =>{console.log(e)});
+    })().catch((e) =>{
+        console.log(e)
+        res.status(500).json({error: 'internal server error'});
+    });
 })
 
 /**
@@ -481,3 +486,5 @@ app.get("/profile_img", urlencodedParser, (req, res) =>{
 app.listen(port, () => {
     console.log(`App listening on port http://localhost:${port}`)
 })
+
+module.exports = {app, con};

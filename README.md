@@ -1,7 +1,3 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Available Scripts
 
 In the project directory, you can run:
@@ -16,55 +12,79 @@ You may also see any lint errors in the console.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner for REST api tests.
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Configuring database
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+create a database:
+~~~~sql
+CREATE DATABASE database_name
+~~~~
+add tables for the database:
+[Script for creating database tables](./src/Server/create_database.txt);
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+Required environment variables:
+~~~~sql
+TOKEN_KEY = "json webtoken key"
+DB_NAME = "database_name"
+DB_USERNAME = "username"
+DB_PASSWORD = "password"
+~~~~
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+##REST api description
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| End point | HTTP Method | Description | Parameters | Response |
+|---|---|---|---|---|
+|/signup|POST|Used for creating an account|username, email, password|accessToken, username, user id|
+|/login|POST|Used for logging in and receiving a jsonwebtoken | email, password | accessToken, username, user id|
+|/post?post_id=|GET|Used for retrieving a single post|authorization, post_id|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
+|/post|POST|Used for creating a new post|authorization, content, reply_to|-|
+|/posts|GET|Used for retrieving posts from followed users for homepage|authorization|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
+|/user/posts?username=|GET|Used for retrieving posts from a user|authorization, username|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
+|/replies?post_id=|GET|Used for retrieving replies for a post|authorization, post_id|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
+|/users?username=|GET|Retrieves users matching search parameter|(authorization), username|username, user_id, profile_img, (user_follow_status)|
+|/like|POST|Used to like a post|authorization, post_id|total_likes, user_like_status|
+|/account?username=|GET|Used to load profile data of a single user|authorization, username|following(count) , followers(count) , posts(count) , isFollowing(boolean), user(object)|
+|/user/followers?username=|GET|Used to load followers of a user|authorization, username|user_id, username, profile_img, user_follow_status|
+|/user/follows?username=|GET|Used to load users that an account follows|authorization, username|username, user_id, profile_img, user_follow_status|
+|/user/follow|POST|Used to follow or to unfollow a user|authorization, follow(boolean)|user_follow_status|
+|/update/bio|POST|Used to update bio|authorization, content|-|
+|/profile_img|GET|Used to get the profile image name of the logged in user|authorization|profile_img|
+|/upload/profile_img|POST|Used to upload a profile image|authorization, image(base64)|-|
+|/images?url=|GET|Used to retrieve images from the server|url(filename)|image file|
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+##Introduction
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+|Dark Mode | Light mode|
+|---|---|
+|![user search](./readme_images/profile_dark.png)|![user search](./readme_images/profile_light.png)|
 
-### Code Splitting
+Signup page
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+![a signup page](./readme_images/signup_page.png)
 
-### Analyzing the Bundle Size
+Login page
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+![a login page](./readme_images/login_page.png)
 
-### Making a Progressive Web App
+Home page
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+![home page](./readme_images/home_page.png)
 
-### Advanced Configuration
+Profile page
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+![a profile page](./readme_images/profile_page.png)
 
-### Deployment
+Editing profile
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+![edit profile](./readme_images/edit_profile.png)
 
-### `npm run build` fails to minify
+User search
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+![user search](./readme_images/user_search.png)
+
