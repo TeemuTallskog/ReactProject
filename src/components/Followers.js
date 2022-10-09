@@ -2,9 +2,21 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import UserCard from "./UserCard";
 
+/**
+ * shows the users that follow current user as a list
+ * @param{string} f - username of the user who's followers are shown
+ */
 function Followers(f) {
+
+    /**
+    * @param{list} followers - the list of users followers
+    */
     const [followers, setFollowers] = useState([]);
 
+
+    /**
+     * gets the follows from database by the param f username and returns list of users and reders them.
+     */
     const fetchFollowers = function (){
         (async() =>{
             await axios.get('http://localhost:8080/user/followers', {
@@ -23,6 +35,9 @@ function Followers(f) {
         fetchFollowers();
     }, []);
 
+    /**
+     * creates and renders the list of followers
+     */
     const generateFollowers = followers.map((item) =>{
         return <li key={item.user_id}>{<UserCard user={item}/>}</li>
     })

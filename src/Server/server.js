@@ -263,6 +263,12 @@ app.post("/like", urlencodedParser, (req, res) => {
     })().catch((e) =>{console.log(e)});
 })
 
+/**
+ * first verifies JSON Token then returns the selected user's info
+ * @param{string} username - user who's info is returned 
+ * @param{int} user_id - logged in user's id
+ * @returns error or count of users follows, followers, posts and the information if loggedin in user is following the user who's info is returned and whether logged in user is selected user.
+ */
 app.get("/account", urlencodedParser, (req, res) => {
     const user = verifyJWT(req, res);
     if(!user) return;
@@ -291,6 +297,11 @@ app.get("/account", urlencodedParser, (req, res) => {
     })().catch((e) =>{console.log(e)});
 })
 
+/**
+ * first verifies JSON Token then returns the selected user's posts by username
+ * @param{string} username - user who's post to return
+ * @returns list of posts or error
+ */
 app.get("/user/posts", urlencodedParser, (req, res)=>{
      const user = verifyJWT(req, res);
     if(!user) return;
@@ -310,6 +321,11 @@ app.get("/user/posts", urlencodedParser, (req, res)=>{
     })();
 })
 
+/**
+ * first verifies JSON Token then returns selected user's followers usernames and ids
+ * @param{string} username - user who's post to return
+ * @returns list of usernames and their user id's or error
+ */
 app.get("/user/followers", urlencodedParser, (req, res)=>{
      const user = verifyJWT(req, res);
     if(!user) return;
@@ -329,6 +345,12 @@ app.get("/user/followers", urlencodedParser, (req, res)=>{
     })();
 })
 
+
+/**
+ * first verifies JSON Token then returns users the selected user follows
+ * @param{string} username - user who's follows to return
+ * @returns list of usernames and their user id's or error
+ */
 app.get("/user/follows", urlencodedParser, (req, res)=>{
      const user = verifyJWT(req, res);
     if(!user) return;
@@ -419,6 +441,13 @@ app.post("/follow", urlencodedParser, (req, res) => {
     })().catch((e) =>{console.log(e)});
 })
 
+/**
+ * first verifies JSON Token then add or removes follow from the database.
+ * @param{boolean} following - boolean wheather follow should be added or removed
+ * @param{string} username - the name of the user that will be followed or unfollowed
+ * @param{int} user_id - id of the user who will do the following or unfollowing
+ * @returns sucess status or error
+ */
 app.post("/user/follow", urlencodedParser, (req,res)=>{
     const user = verifyJWT(req, res);
     if(!user) return;
