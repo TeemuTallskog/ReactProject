@@ -34,3 +34,29 @@
         margin-bottom: 10px;
     }
 }
+
+.follow-button.profile-action-button{
+    color:white;
+}
+
+.dark .follow-button.profile-action-button{
+    color: black;
+}
+.dark .follow-button.profile-action-button:hover{
+    background-color: dodgerblue;
+}
+
+.follow-button.profile-action-button:hover{
+    background-color: dodgerblue;
+}
+
+.follow-button.profile-action-button.following{
+    color: black;
+}
+.follow-button.profile-action-button.following:hover{
+    color: white;
+}
+
+.dark .follow-button.profile-action-button.following{
+    color: white;
+}

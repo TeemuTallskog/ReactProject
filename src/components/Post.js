@@ -126,7 +126,7 @@ function Post(post) {
      * @type {JSX.Element|null}
      */
     const postOptions = post.post.user_id == localStorage.getItem("user-id")? <DropdownButton className="post-options-button" onClick={(event => event.stopPropagation())} title={<MoreHorizIcon/>}>
-        <DropdownItem className="post-options-option" onClick={deletePost}><DeleteIcon/>Delete post</DropdownItem>
+        <DropdownItem className="post-options-option" onClick={deletePost}><DeleteIcon className="post-delete-icon"/>Delete post</DropdownItem>
     </DropdownButton> : null;
 
     return (

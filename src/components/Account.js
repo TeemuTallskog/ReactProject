@@ -109,7 +109,7 @@ function Account() {
     let followButton= () =>{
         if(hasFollowButton){
             if(isFollowing){
-                return <Button2 className="follow-button following profile-action-button" onClick={()=>follow(false)}>Following</Button2>;
+                return <Button2 className="follow-button following profile-action-button" onClick={()=>follow(false)}>Unfollow</Button2>;
             } else {
                 return <Button2 className="follow-button profile-action-button" onClick={()=>follow(true)}>Follow</Button2>;
             }

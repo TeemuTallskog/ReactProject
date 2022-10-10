@@ -117,23 +117,25 @@
     border-color: transparent;
 }
 
-.btn:first-child{
+
+.dropdown-toggle:first-child{
     color: black;
 }
 
-.dark .btn:first-child{
+.dark .dropdown-toggle:first-child{
     color:white;
 }
 
-.btn:first-child:hover{
+.dropdown-toggle:first-child:hover{
     background-color: var(--dark-component-hover-color);
     border: none;
 }
 
-.dark .btn:first-child:hover{
+.dark .dropdown-toggle:first-child:hover{
     background-color: var(--dark-backgroud);
     border: none;
 }
+
 
 .dropdown-toggle:after{
     border: none;
