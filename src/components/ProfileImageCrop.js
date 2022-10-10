@@ -1,4 +1,4 @@
-import {useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import ReactCrop, {centerCrop, makeAspectCrop} from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import {Form, Button} from "react-bootstrap";
@@ -42,10 +42,19 @@ function ProfileImageCrop(){
     const [completedCrop, setCompletedCrop] = useState()
     const [scale, setScale] = useState(1)
     const [aspect, setAspect] = useState(1 / 1)
+    const [errors, setErrors] = useState({
+        fileUpload: '',
+    })
     const navigate = useNavigate();
 
     function onSelectFile(e) {
         if (e.target.files && e.target.files.length > 0) {
+            console.log(e.target.files[0].size);
+            if(e.target.files[0].size > 10 * 1024 * 1024){
+                setErrors({fileUpload: "This image is too large, the maximum image size is 4MB."})
+                return;
+            }
+            setErrors({fileUpload: ""});
             setCrop(undefined) // Makes crop preview update between images.
             const reader = new FileReader()
             reader.addEventListener('load', () =>
@@ -112,7 +121,12 @@ function ProfileImageCrop(){
     return (
         <div className="Crop-Container">
             <div className="Crop-Controls">
-                <Form.Control type="file" accept="image/*" onChange={onSelectFile} />
+                <Form.Group>
+                <Form.Control type="file" accept="image/*"  onChange={onSelectFile} isInvalid={!!errors.fileUpload}/>
+                    <Form.Control.Feedback type="invalid">
+                        {errors.fileUpload}
+                    </Form.Control.Feedback>
+                </Form.Group>
             </div>
             {imgSrc && (
                 <div className="Crop-View">

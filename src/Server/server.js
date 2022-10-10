@@ -10,7 +10,9 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
-const upload = multer();
+const upload = multer({
+    limits: {fieldSize: 10 * 1024 * 1024}
+});
 
 const urlencodedParser = bodyParser.urlencoded({extended: false});
 app.use(bodyParser.urlencoded({extended: false}));
