@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import Post from "./Post";
 import axios from "axios";
+import PostForm from "./PostForm";
 
 /**
  * shows the current users posts
@@ -44,6 +45,7 @@ function Posts(p) {
 
     return (
         <div style={{margin: 'auto', width: '100%', padding:'10px' }}>
+            {p.isMyAccount ? <PostForm/> : <></>}
             <div>{generatePosts}</div>
         </div>
     )

@@ -466,7 +466,7 @@ app.get("/images", urlencodedParser, (req, res) =>{
             if(err){
                 res.sendFile(__dirname + "/uploads/profile_img_default.png", function (err){
                     if(err){
-                        res.status(404).json({error: "not found"});
+                        res.status(404).end();
                     }
                 });
             }

@@ -87,7 +87,7 @@ function Account() {
     let generateSelected =()=> {
         if(activeButton === "posts"){
             if(posts >0)
-                return <Posts item={searchParams.get("username")}/>
+                return <Posts item={searchParams.get("username")} isMyAccount={!hasFollowButton}/>
             else
                 return <><br/><p>No posts.</p></>
         } else if(activeButton === "followers"){
