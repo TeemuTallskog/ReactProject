@@ -33,32 +33,6 @@ DB_USERNAME = "username"
 DB_PASSWORD = "password"
 ~~~~
 
-## REST api description
-
-| End point | HTTP Method | Description | Parameters | Response |
-|---|---|---|---|---|
-|/signup|POST|Used for creating an account|username, email, password|accessToken, username, user id|
-|/login|POST|Used for logging in and receiving a jsonwebtoken | email, password | accessToken, username, user id|
-|/post?post_id=|GET|Used for retrieving a single post|authorization, post_id|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
-|/post|POST|Used for creating a new post|authorization, content, reply_to|-|
-|/delete/post?post_id|DELETE|Used to delete posts|authorization, post_id|-|
-|/posts|GET|Used for retrieving posts from followed users for homepage|authorization|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
-|/user/posts?username=|GET|Used for retrieving posts from a user|authorization, username|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
-|/replies?post_id=|GET|Used for retrieving replies for a post|authorization, post_id|user_id, post_id, content, reply_to, created, username, profile_img, total_likes, user_like_status, reply_count|
-|/users?username=|GET|Retrieves users matching search parameter|(authorization), username|username, user_id, profile_img, (user_follow_status)|
-|/like|POST|Used to like a post|authorization, post_id|total_likes, user_like_status|
-|/account?username=|GET|Used to load profile data of a single user|authorization, username|following(count) , followers(count) , posts(count) , isFollowing(boolean), user(object)|
-|/user/followers?username=|GET|Used to load followers of a user|authorization, username|user_id, username, profile_img, user_follow_status|
-|/user/follows?username=|GET|Used to load users that an account follows|authorization, username|username, user_id, profile_img, user_follow_status|
-|/user/follow|POST|Used to follow or to unfollow a user|authorization, follow(boolean)|user_follow_status|
-|/update/bio|POST|Used to update bio|authorization, content|-|
-|/profile_img|GET|Used to get the profile image name of the logged in user|authorization|profile_img|
-|/upload/profile_img|POST|Used to upload a profile image|authorization, image(base64)|-|
-|/images?url=|GET|Used to retrieve images from the server|url(filename)|image file|
-
-
-
-
 ## Introduction
 
 |Dark Mode | Light mode|
@@ -88,4 +62,364 @@ Editing profile
 User search
 
 ![user search](./readme_images/user_search.png)
+
+## REST api description
+
+<table>
+<tr>
+<td>End point</td><td>HTTP Method</td><td>Description</td><td>Parameters</td><td>Response</td>
+</tr>
+<tr>
+<td>/signup</td><td>POST</td><td>Used for creating an account</td>
+<td>
+
+```json
+{
+    "username": "",
+    "email": "",
+    "password": ""
+}
+```
+</td>
+<td>
+
+```json
+{
+    "accessToken": "",
+    "username": "",
+    "user_id": ""
+}
+```
+</td>
+</tr>
+<tr>
+<td>/login</td><td>POST</td><td>Used for logging in and receiving a jsonwebtoken</td>
+<td>
+
+```json
+{
+    "email": "",
+    "password": ""
+}
+```
+</td>
+<td>
+
+```json
+{
+    "accessToken": "",
+    "username": "",
+    "user_id": ""
+}
+```
+</td>
+</tr>
+<tr>
+<td>/post?post_id=</td><td>GET</td><td>Used for retrieving a single post</td>
+<td>
+Header: authorization<br/>
+Query: post_id
+</td>
+<td>
+
+```json
+{
+    "post": {
+      "user_id":  "",
+      "post_id":  "",
+      "content":  "",
+      "reply_to":  "",
+      "created":  "",
+      "username":  "",
+      "profile_img": "",
+      "total_likes":  "",
+      "user_like_status":  "",
+      "reply_count": ""
+    }
+}
+```
+</td>
+</tr>
+<tr>
+<td>/post</td><td>POST</td><td>Used for creating a new post</td>
+<td>
+Header: authorization<br/>
+Body:
+
+```json
+{
+    "content": "",
+    "reply_to": ""
+}
+```
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>/delete/post?post_id=</td><td>DELETE</td><td>Used to delete posts</td>
+<td>
+Header: authorization<br/>
+Query: post_id
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>/posts</td><td>GET</td><td>Used for retrieving posts from followed users for homepage</td>
+<td>
+Header: authorization
+</td>
+<td>
+
+```json
+{
+    "posts": [
+      {
+        "user_id":  "",
+        "post_id":  "",
+        "content":  "",
+        "reply_to":  "",
+        "created":  "",
+        "username":  "",
+        "profile_img": "",
+        "total_likes":  "",
+        "user_like_status":  "",
+        "reply_count": ""
+      }
+    ]
+}
+```
+</td>
+</tr>
+<tr>
+<td>/user/posts?username=</td><td>GET</td><td>Used for retrieving posts from followed users for homepage</td>
+<td>
+Header: authorization<br/>
+Query: post_id
+</td>
+<td>
+
+```json
+{
+    "posts": [
+      {
+        "user_id":  "",
+        "post_id":  "",
+        "content":  "",
+        "reply_to":  "",
+        "created":  "",
+        "username":  "",
+        "profile_img": "",
+        "total_likes":  "",
+        "user_like_status":  "",
+        "reply_count": ""
+      }
+    ]
+}
+```
+</td>
+</tr>
+<tr>
+<td>/replies?post_id=</td><td>GET</td><td>Used for retrieving replies for a post</td>
+<td>
+Header: authorization<br/>
+Query: post_id
+</td>
+<td>
+
+```json
+{
+    "posts": [
+      {
+        "user_id":  "",
+        "post_id":  "",
+        "content":  "",
+        "reply_to":  "",
+        "created":  "",
+        "username":  "",
+        "profile_img": "",
+        "total_likes":  "",
+        "user_like_status":  "",
+        "reply_count": ""
+      }
+    ]
+}
+```
+</td>
+</tr>
+<tr>
+<td>/users?username=</td><td>GET</td><td>Retrieves users matching search parameter</td>
+<td>
+Header: authorization<br/>
+Query: username
+</td>
+<td>
+
+```json
+{
+    "users": [
+      {
+        "user_id":  "",
+        "username":  "",
+        "profile_img": "",
+        "user_follow_status":  ""
+      }
+    ]
+}
+```
+</td>
+</tr>
+<tr>
+<td>/like</td><td>POST</td><td>Used to like a post</td>
+<td>
+Header: authorization<br/>
+Body:
+
+```json
+{
+  "post_id":  ""
+}
+```
+</td>
+<td>
+
+```json
+{
+  "total_likes":  "",
+  "user_like_status":  ""
+}
+```
+</td>
+</tr>
+<tr>
+<td>/account?username=</td><td>GET</td><td>Used to load profile data of a single user</td>
+<td>
+Header: authorization<br/>
+Query: username
+</td>
+<td>
+
+```json
+{
+  "following":  "",
+  "followers":  "",
+  "posts":  "",
+  "isFollowing":  "",
+  "user": {
+    "username": "",
+    "bio": "",
+    "profile_img":  "",
+    "user_id": ""
+  }
+}
+```
+</td>
+</tr>
+<tr>
+<td>/user/followers?username=</td><td>GET</td><td>Used to load followers of a user</td>
+<td>
+Header: authorization<br/>
+Query: username
+</td>
+<td>
+
+```json
+{
+  "followers": [
+      {
+        "username": "",
+        "profile_img":  "",
+        "user_id": "",
+        "user_follow_status": ""
+      }
+    ]
+}
+```
+</td>
+</tr>
+<tr>
+<td>/user/follows?username=</td><td>GET</td><td>Used to load users that an account follows</td>
+<td>
+Header: authorization<br/>
+Query: username
+</td>
+<td>
+
+```json
+{
+  "follows": [
+      {
+        "username": "",
+        "profile_img":  "",
+        "user_id": "",
+        "user_follow_status": ""
+      }
+    ]
+}
+```
+</td>
+</tr>
+<tr>
+<td>/user/follow</td><td>POST</td><td>Used to follow or to unfollow a user</td>
+<td>
+Header: authorization<br/>
+Body:
+
+```json
+{
+  "user_id": "",
+  "follow": "true/false"
+}
+```
+</td>
+<td>
+
+```json
+{
+  "user_like_status": ""
+}
+```
+</td>
+</tr>
+<tr>
+<td>/profile_img</td><td>GET</td><td>Used to get the profile image address of the logged in user</td>
+<td>
+Header: authorization
+</td>
+<td>
+
+```json
+{
+  "profile_img": "URL"
+}
+```
+</td>
+</tr>
+<tr>
+<td>/upload/profile_img</td><td>POST</td><td>Used to upload a profile image</td>
+<td>
+Header: authorization<br/>
+Body:
+
+```json
+{
+  "image": "base64 image"
+}
+```
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>/images?url=</td><td>GET</td><td>Used to retrieve images from the server</td>
+<td>
+Query: url(filename)
+</td>
+<td>
+File: image
+</td>
+</tr>
+</table>
+
 
